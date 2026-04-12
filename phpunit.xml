@@ -10,11 +10,15 @@
         <testsuite name="Infrastructure">
             <directory>tests/Infrastructure</directory>
         </testsuite>
+        <testsuite name="Application">
+            <directory>tests/Application</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>src/Domain</directory>
             <directory>src/Infrastructure</directory>
+            <directory>src/Application</directory>
         </include>
     </source>
 </phpunit>
