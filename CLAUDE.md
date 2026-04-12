@@ -69,7 +69,8 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Не использовать сервис-локатор / `ContainerAware` — зависимости через конструктор
 
 ## Тесты
-- PHPUnit, тесты пишутся ТОЛЬКО для Domain-слоя (Value Objects, Enum, Entity, RecommendationService)
-- Тесты для Application, Infrastructure, Adapters — позже, отдельным этапом
-- Структура: `tests/Domain/` повторяет `src/Domain/` (например `tests/Domain/Enum/ReadingStatusTest.php`)
+- PHPUnit, тесты пишутся для Domain и Infrastructure слоёв
+- Тесты для Application и Adapters — позже, отдельным этапом
+- Структура: `tests/Domain/` повторяет `src/Domain/`, `tests/Infrastructure/` повторяет `src/Infrastructure/`
+  - Примеры: `tests/Domain/Enum/ReadingStatusTest.php`, `tests/Infrastructure/Vectorization/CosineDistanceTest.php`
 - После каждого изменения: `./vendor/bin/phpunit` + `./vendor/bin/phpstan analyse`
