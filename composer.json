@@ -11,11 +11,17 @@
         "symfony/yaml": "^7.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.12"
+        "phpstan/phpstan": "^1.12",
+        "phpunit/phpunit": "^13.1"
     },
     "autoload": {
         "psr-4": {
             "BookTracker\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BookTracker\\Tests\\": "tests/"
         }
     },
     "config": {

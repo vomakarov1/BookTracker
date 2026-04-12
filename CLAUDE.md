@@ -3,7 +3,7 @@
 ## Стек
 - PHP 8.3, Symfony 7 (используется ТОЛЬКО в Infrastructure и Adapters)
 - Composer, PSR-4 автолоад (`BookTracker\` → `src/`), PSR-12 код-стайл
-- PHPStan level 8
+- PHPStan level 8, PHPUnit (только для Domain-слоя)
 
 ## Архитектура
 Гексагональная (Ports & Adapters) + CQRS.
@@ -69,5 +69,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Не использовать сервис-локатор / `ContainerAware` — зависимости через конструктор
 
 ## Тесты
-- Тесты НЕ писать — будут добавлены позже отдельным этапом
-- После каждого изменения: `./vendor/bin/phpstan analyse`
+- PHPUnit, тесты пишутся ТОЛЬКО для Domain-слоя (Value Objects, Enum, Entity, RecommendationService)
+- Тесты для Application, Infrastructure, Adapters — позже, отдельным этапом
+- Структура: `tests/Domain/` повторяет `src/Domain/` (например `tests/Domain/Enum/ReadingStatusTest.php`)
+- После каждого изменения: `./vendor/bin/phpunit` + `./vendor/bin/phpstan analyse`
