@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BookTracker\Infrastructure\Import;
 
 use BookTracker\Application\DTO\BookDTO;
-use BookTracker\Application\DTO\UserDTO;
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Application\Port\ImportParserInterface;
 
@@ -35,8 +34,8 @@ final class CsvParser implements ImportParserInterface
 						'Row %d has %d columns, expected %d.',
 						$index + 1,
 						count($row),
-						$expectedColumns
-					)
+						$expectedColumns,
+					),
 				);
 			}
 
@@ -46,45 +45,6 @@ final class CsvParser implements ImportParserInterface
 				author: $row[2],
 				category: $row[3],
 				complexity: (int)$row[4],
-			);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @return array<UserDTO>
-	 */
-	public function parseUsers(string $content): array
-	{
-		$rows = $this->parseRows($content);
-
-		if (count($rows) === 0)
-		{
-			return [];
-		}
-
-		$expectedColumns = 3;
-		$result = [];
-
-		foreach ($rows as $index => $row)
-		{
-			if (count($row) !== $expectedColumns)
-			{
-				throw new ImportFailedException(
-					sprintf(
-						'Row %d has %d columns, expected %d.',
-						$index + 1,
-						count($row),
-						$expectedColumns
-					)
-				);
-			}
-
-			$result[] = new UserDTO(
-				id: $row[0],
-				name: $row[1],
-				email: $row[2],
 			);
 		}
 

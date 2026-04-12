@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BookTracker\Infrastructure\Export;
 
 use BookTracker\Application\DTO\BookDTO;
-use BookTracker\Application\DTO\UserDTO;
 use BookTracker\Application\Port\ExportFormatterInterface;
 use JsonException;
 
@@ -25,25 +24,7 @@ final class JsonFormatter implements ExportFormatterInterface
 				'category' => $book->category,
 				'complexity' => $book->complexity,
 			],
-			$books
-		);
-
-		return (string)json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-	}
-
-	/**
-	 * @param array<UserDTO> $users
-	 * @throws JsonException
-	 */
-	public function formatUsers(array $users): string
-	{
-		$data = array_map(
-			static fn(UserDTO $user) => [
-				'id' => $user->id,
-				'name' => $user->name,
-				'email' => $user->email,
-			],
-			$users
+			$books,
 		);
 
 		return (string)json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

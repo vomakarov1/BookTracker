@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BookTracker\Infrastructure\Import;
 
 use BookTracker\Application\DTO\BookDTO;
-use BookTracker\Application\DTO\UserDTO;
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Application\Port\ImportParserInterface;
 
@@ -26,24 +25,7 @@ final class JsonParser implements ImportParserInterface
 				category: (string)($item['category'] ?? ''),
 				complexity: (int)($item['complexity'] ?? 1),
 			),
-			$data
-		);
-	}
-
-	/**
-	 * @return array<UserDTO>
-	 */
-	public function parseUsers(string $content): array
-	{
-		$data = $this->decode($content);
-
-		return array_map(
-			fn(array $item) => new UserDTO(
-				id: (string)($item['id'] ?? ''),
-				name: (string)($item['name'] ?? ''),
-				email: (string)($item['email'] ?? ''),
-			),
-			$data
+			$data,
 		);
 	}
 
@@ -57,7 +39,7 @@ final class JsonParser implements ImportParserInterface
 		if (json_last_error() !== JSON_ERROR_NONE)
 		{
 			throw new ImportFailedException(
-				sprintf('Invalid JSON: %s', json_last_error_msg())
+				sprintf('Invalid JSON: %s', json_last_error_msg()),
 			);
 		}
 
