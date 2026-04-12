@@ -40,6 +40,29 @@ final class ReadingEntry
 		);
 	}
 
+	public static function reconstruct(
+		string $id,
+		string $userId,
+		string $bookId,
+		ReadingStatus $status,
+		DateTimeImmutable $startedAt,
+		?ReadingEntryRating $rating = null,
+		?DateTimeImmutable $finishedAt = null,
+	): self
+	{
+		$entry = new self(
+			id: $id,
+			userId: $userId,
+			bookId: $bookId,
+			status: $status,
+			startedAt: $startedAt,
+		);
+		$entry->rating = $rating;
+		$entry->finishedAt = $finishedAt;
+
+		return $entry;
+	}
+
 	public function changeStatus(ReadingStatus $new): void
 	{
 		if (!$this->status->canTransitionTo($new))

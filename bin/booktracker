@@ -5,8 +5,27 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+$container = new ContainerBuilder();
+$container->setParameter('project_dir', dirname(__DIR__));
+$container->setParameter('storage_path', dirname(__DIR__) . '/storage');
+
+$loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__) . '/config'));
+$loader->load('services.yaml');
+$container->compile();
 
 $application = new Application('BookTracker', '1.0.0');
+
+foreach ($container->findTaggedServiceIds('console.command') as $id => $tags)
+{
+	/** @var Command $command */
+	$command = $container->get($id);
+	$application->add($command);
+}
 
 $application->run();

@@ -1,5 +1,136 @@
+parameters:
+    storage_path: '%project_dir%/storage'
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
         public: false
+
+    BookTracker\Application\Command\Book\CreateBookHandler: ~
+    BookTracker\Application\Command\Book\DeleteBookHandler: ~
+    BookTracker\Application\Command\User\CreateUserHandler: ~
+    BookTracker\Application\Command\User\DeleteUserHandler: ~
+    BookTracker\Application\Command\ReadingEntry\CreateReadingEntryHandler: ~
+    BookTracker\Application\Command\ReadingEntry\DeleteReadingEntryHandler: ~
+    BookTracker\Application\Command\ReadingEntry\ChangeReadingStatusHandler: ~
+    BookTracker\Application\Command\ReadingEntry\RateReadingEntryHandler: ~
+
+    BookTracker\Application\Query\Book\GetBookHandler: ~
+    BookTracker\Application\Query\Book\GetBooksListHandler: ~
+    BookTracker\Application\Query\User\GetUserHandler: ~
+    BookTracker\Application\Query\User\GetUsersListHandler: ~
+    BookTracker\Application\Query\ReadingEntry\GetReadingEntriesHandler: ~
+    BookTracker\Application\Query\Recommendation\GetRecommendationsHandler: ~
+
+    BookTracker\Application\Command\Import\ImportBooksHandler:
+        arguments:
+            $parsers:
+                json: '@BookTracker\Infrastructure\Import\JsonParser'
+                csv: '@BookTracker\Infrastructure\Import\CsvParser'
+
+    BookTracker\Application\Command\Export\ExportBooksHandler:
+        arguments:
+            $formatters:
+                json: '@BookTracker\Infrastructure\Export\JsonFormatter'
+                csv: '@BookTracker\Infrastructure\Export\CsvFormatter'
+
+    BookTracker\Domain\Service\RecommendationService: ~
+
+    BookTracker\Infrastructure\Repository\JsonBookRepository:
+        arguments:
+            $storagePath: '%storage_path%'
+
+    BookTracker\Infrastructure\Repository\JsonUserRepository:
+        arguments:
+            $storagePath: '%storage_path%'
+
+    BookTracker\Infrastructure\Repository\JsonReadingEntryRepository:
+        arguments:
+            $storagePath: '%storage_path%'
+
+    BookTracker\Infrastructure\Import\JsonParser: ~
+    BookTracker\Infrastructure\Import\CsvParser: ~
+    BookTracker\Infrastructure\Export\JsonFormatter: ~
+    BookTracker\Infrastructure\Export\CsvFormatter: ~
+    BookTracker\Infrastructure\Vectorization\BookFeatureVectorizer: ~
+    BookTracker\Infrastructure\Vectorization\CosineDistance: ~
+
+    BookTracker\Domain\Repository\BookRepositoryInterface:
+        alias: BookTracker\Infrastructure\Repository\JsonBookRepository
+
+    BookTracker\Domain\Repository\UserRepositoryInterface:
+        alias: BookTracker\Infrastructure\Repository\JsonUserRepository
+
+    BookTracker\Domain\Repository\ReadingEntryRepositoryInterface:
+        alias: BookTracker\Infrastructure\Repository\JsonReadingEntryRepository
+
+    BookTracker\Domain\Service\VectorizerInterface:
+        alias: BookTracker\Infrastructure\Vectorization\BookFeatureVectorizer
+
+    BookTracker\Domain\Service\DistanceMetricInterface:
+        alias: BookTracker\Infrastructure\Vectorization\CosineDistance
+
+    BookTracker\Adapters\Cli\CreateBookCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\DeleteBookCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ListBooksCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ShowBookCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\CreateUserCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\DeleteUserCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ListUsersCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ShowUserCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\CreateReadingEntryCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ChangeReadingStatusCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\RateReadingEntryCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ListReadingEntriesCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\DeleteReadingEntryCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\GetRecommendationsCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ImportBooksCliCommand:
+        public: true
+        tags: ['console.command']
+
+    BookTracker\Adapters\Cli\ExportBooksCliCommand:
+        public: true
+        tags: ['console.command']

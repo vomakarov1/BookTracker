@@ -15,7 +15,7 @@
 src/
 ├── Domain/          # Сущности, VO, enum, интерфейсы репозиториев, бизнес-сервисы
 ├── Application/     # Command/Query хендлеры, DTO, порты импорта/экспорта
-├── Adapters/Cli/    # Symfony Console Commands — парсят ввод, вызывают хендлеры
+├── Adapters/Cli/    # Один класс = одна команда, суффикс CliCommand (CreateBookCliCommand и т.д.)
 └── Infrastructure/  # Реализации репозиториев, парсеров, форматтеров, векторизации
 ```
 
