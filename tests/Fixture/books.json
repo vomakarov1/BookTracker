@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "title": "Clean Code",
+    "author": "Robert Martin",
+    "category": "Programming",
+    "complexity": 5
+  },
+  {
+    "id": "2",
+    "title": "The Pragmatic Programmer",
+    "author": "David Thomas",
+    "category": "Programming",
+    "complexity": 4
+  },
+  {
+    "id": "3",
+    "title": "Domain-Driven Design",
+    "author": "Eric Evans",
+    "category": "Architecture",
+    "complexity": 8
+  }
+]

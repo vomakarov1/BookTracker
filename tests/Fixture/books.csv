@@ -1,0 +1,4 @@
+id,title,author,category,complexity
+1,Clean Code,Robert Martin,Programming,5
+2,The Pragmatic Programmer,David Thomas,Programming,4
+3,Domain-Driven Design,Eric Evans,Architecture,8
