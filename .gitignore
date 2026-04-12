@@ -3,3 +3,4 @@
 /storage/*.json
 /.claude/settings.local.json
 /.phpunit.result.cache
+backup.json

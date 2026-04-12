@@ -3,7 +3,7 @@
 ## Стек
 - PHP 8.3, Symfony 7 (используется ТОЛЬКО в Infrastructure и Adapters)
 - Composer, PSR-4 автолоад (`BookTracker\` → `src/`), PSR-12 код-стайл
-- PHPStan level 8, PHPUnit (только для Domain-слоя)
+- PHPStan level 8, PHPUnit
 
 ## Архитектура
 Гексагональная (Ports & Adapters) + CQRS.
@@ -30,7 +30,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 
 ### Domain
 - Entity поля — private, изменение только через методы с бизнес-логикой
-- `ReadingEntry`: конструктор **private**, создание только через `ReadingEntry::create(User, Book)`
+- `ReadingEntry`: конструктор **private**, создание только через `ReadingEntry::create(string $id, User $user, Book $book, ReadingStatus $status = ReadingStatus::PLANNED)`
 - Репозитории — только интерфейсы, реализации в Infrastructure
 - `RecommendationService` содержит бизнес-правила фильтрации ("не рекомендовать автора после 3 низких оценок", "рекомендовать следующую в серии"), но НЕ обращается к репозиториям напрямую — получает данные через параметры
 - Value Objects: `ReadingEntryRating` (валидация диапазона)
@@ -38,7 +38,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 #### Глоссарий сущностей
 - **Book** — книга в каталоге: title, author, category, complexity. Агрегат. Инварианты: title и author не пустые.
 - **User** — пользователь системы: name, email. Агрегат. Инвариант: email уникален.
-- **ReadingEntry** — факт чтения книги пользователем: связь User↔Book, status, rating, даты. Отдельный агрегат. Инварианты: создаётся только для существующих User и Book (фабричный метод), рейтинг выставляется только для FINISHED, переходы статусов ограничены (PLANNED→READING→FINISHED, любой→DROPPED, DROPPED→PLANNED).
+- **ReadingEntry** — факт чтения книги пользователем: связь User↔Book, status, rating, даты. Отдельный агрегат. Инварианты: создаётся только для существующих User и Book (фабричный метод), рейтинг выставляется только для FINISHED, переходы статусов ограничены (PLANNED→READING, PLANNED→DROPPED, READING→FINISHED, READING→DROPPED, DROPPED→PLANNED; из FINISHED переходов нет).
 
 ### Application
 - CQRS: Command мутирует состояние, Query читает. Не смешивать.
