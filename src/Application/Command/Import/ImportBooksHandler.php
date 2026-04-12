@@ -6,6 +6,7 @@ namespace BookTracker\Application\Command\Import;
 
 use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Application\Exception\ImportFailedException;
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Application\Port\ImportParserInterface;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
@@ -18,6 +19,7 @@ final class ImportBooksHandler
 	public function __construct(
 		private readonly BookRepositoryInterface $bookRepository,
 		private readonly array $parsers,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
@@ -29,7 +31,7 @@ final class ImportBooksHandler
 		if ($content === false)
 		{
 			throw new ImportFailedException(
-				sprintf('Failed to read file: %s', $command->filePath)
+				sprintf('Failed to read file: %s', $command->filePath),
 			);
 		}
 
@@ -45,7 +47,7 @@ final class ImportBooksHandler
 				continue;
 			}
 
-			$id = $this->bookRepository->nextId();
+			$id = $this->idGenerator->generate();
 			$book = new Book(
 				id: $id,
 				title: $dto->title,

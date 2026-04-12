@@ -8,6 +8,7 @@ use BookTracker\Application\Command\Book\CreateBookCommand;
 use BookTracker\Application\Command\Book\CreateBookHandler;
 use BookTracker\Domain\Exception\DuplicateBookException;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
+use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use PHPUnit\Framework\TestCase;
 
 final class CreateBookHandlerTest extends TestCase
@@ -18,7 +19,7 @@ final class CreateBookHandlerTest extends TestCase
 	protected function setUp(): void
 	{
 		$this->repository = new InMemoryBookRepository();
-		$this->handler = new CreateBookHandler($this->repository);
+		$this->handler = new CreateBookHandler($this->repository, new InMemoryIdGenerator());
 	}
 
 	public function testCreatesBookWithCorrectFields(): void

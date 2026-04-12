@@ -32,6 +32,4 @@ interface ReadingEntryRepositoryInterface
 	public function delete(string $id): void;
 
 	public function existsByUserAndBook(string $userId, string $bookId): bool;
-
-	public function nextId(): string;
 }

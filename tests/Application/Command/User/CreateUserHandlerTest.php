@@ -8,6 +8,7 @@ use BookTracker\Application\Command\User\CreateUserCommand;
 use BookTracker\Application\Command\User\CreateUserHandler;
 use BookTracker\Domain\Exception\DuplicateUserException;
 use BookTracker\Tests\Stub\InMemoryUserRepository;
+use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use PHPUnit\Framework\TestCase;
 
 final class CreateUserHandlerTest extends TestCase
@@ -18,7 +19,7 @@ final class CreateUserHandlerTest extends TestCase
 	protected function setUp(): void
 	{
 		$this->repository = new InMemoryUserRepository();
-		$this->handler = new CreateUserHandler($this->repository);
+		$this->handler = new CreateUserHandler($this->repository, new InMemoryIdGenerator());
 	}
 
 	public function testCreatesUserWithCorrectFields(): void

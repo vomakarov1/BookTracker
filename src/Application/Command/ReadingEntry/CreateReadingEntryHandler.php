@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\ReadingEntry;
 
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Entity\ReadingEntry;
 use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
@@ -16,6 +17,7 @@ final class CreateReadingEntryHandler
 		private readonly UserRepositoryInterface $userRepository,
 		private readonly BookRepositoryInterface $bookRepository,
 		private readonly ReadingEntryRepositoryInterface $readingEntryRepository,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
@@ -32,11 +34,11 @@ final class CreateReadingEntryHandler
 					'Reading entry for user "%s" and book "%s" already exists.',
 					$command->userId,
 					$command->bookId,
-				)
+				),
 			);
 		}
 
-		$id = $this->readingEntryRepository->nextId();
+		$id = $this->idGenerator->generate();
 
 		$entry = ReadingEntry::create(id: $id, user: $user, book: $book);
 

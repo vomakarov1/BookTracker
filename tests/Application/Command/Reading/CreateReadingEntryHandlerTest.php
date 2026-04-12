@@ -12,6 +12,7 @@ use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Exception\UserNotFoundException;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
+use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use BookTracker\Tests\Stub\InMemoryUserRepository;
 use PHPUnit\Framework\TestCase;
@@ -32,6 +33,7 @@ final class CreateReadingEntryHandlerTest extends TestCase
 			$this->userRepository,
 			$this->bookRepository,
 			$this->entryRepository,
+			new InMemoryIdGenerator(),
 		);
 
 		$this->userRepository->save(new User('u1', 'Alice', 'alice@example.com'));

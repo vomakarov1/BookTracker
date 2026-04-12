@@ -27,6 +27,4 @@ interface BookRepositoryInterface
 	public function delete(string $id): void;
 
 	public function existsByTitle(string $title): bool;
-
-	public function nextId(): string;
 }

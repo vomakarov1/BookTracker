@@ -13,8 +13,6 @@ final class InMemoryUserRepository implements UserRepositoryInterface
 	/** @var array<string, User> */
 	private array $users = [];
 
-	private int $nextId = 1;
-
 	public function getById(string $id): User
 	{
 		if (!isset($this->users[$id]))
@@ -57,10 +55,5 @@ final class InMemoryUserRepository implements UserRepositoryInterface
 		}
 
 		return false;
-	}
-
-	public function nextId(): string
-	{
-		return (string)$this->nextId++;
 	}
 }

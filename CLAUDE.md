@@ -1,7 +1,7 @@
 # BookTracker — Система учёта прочитанной литературы
 
 ## Стек
-- PHP 8.3, Symfony 7 (используется ТОЛЬКО в Infrastructure и Adapters)
+- PHP 8.4, Symfony 7 (используется ТОЛЬКО в Infrastructure и Adapters)
 - Composer, PSR-4 автолоад (`BookTracker\` → `src/`), PSR-12 код-стайл
 - PHPStan level 8, PHPUnit
 
@@ -45,9 +45,11 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Валидация формата — в Command (self-validating), валидация с обращением к репозиторию — в Handler
 - `GetRecommendationsHandler` — оркестратор: достаёт данные из репозиториев, передаёт в `RecommendationService`
 - `RecommendationDTO` содержит: книгу, score (числовая близость), reason (почему рекомендована)
+- **Генерация ID** — через `Application\Port\IdGeneratorInterface::generate()`. Репозитории НЕ порождают ID. Реализация (`UuidV4Generator`) живёт в Infrastructure и связывается через DI.
 
 ### Infrastructure
 - Репозитории: хранение в JSON-файлах (`storage/books.json`, `storage/users.json`, `storage/reading_entries.json`). При каждом вызове загружают файл, при сохранении — записывают обратно. При необходимости заменяются на Doctrine DBAL/ORM с маппингом в Infrastructure, НЕ в Domain-сущностях
+- `UuidV4Generator` implements `IdGeneratorInterface` — генерирует UUID v4 через `random_bytes()`
 - `BookFeatureVectorizer` implements `VectorizerInterface` — возвращает `BookVector`
 - `BookVector` — инфраструктурный объект (массив числовых признаков книги для вычисления расстояния). Живёт в Infrastructure/Vectorization, НЕ в Domain
 - `CosineDistance` implements `DistanceMetricInterface`
@@ -67,10 +69,12 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Не добавлять Event/Listener/Subscriber — не нужны (YAGNI)
 - Не использовать Symfony Messenger для Command/Query Bus
 - Не использовать сервис-локатор / `ContainerAware` — зависимости через конструктор
+- Не добавлять `nextId()` или любые методы генерации ID в интерфейсы репозиториев — ID генерируется через `IdGeneratorInterface` в Application слое
 
 ## Тесты
 - PHPUnit, тесты пишутся для Domain и Application и Infrastructure слоёв
 - Тесты для Adapters пока не пишутся
 - Структура: `tests/` повторяет `src/` (например `tests/Domain/Enum/ReadingStatusTest.php`)
 - In-memory реализации репозиториев для тестов: `tests/Stub/` (InMemoryBookRepository и т.д.)
+- `tests/Stub/InMemoryIdGenerator` — стаб `IdGeneratorInterface`, возвращает последовательные строковые числа ("1", "2", …)
 - После каждого изменения: `./vendor/bin/phpunit` + `./vendor/bin/phpstan analyse`

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\Book;
 
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\DuplicateBookException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
@@ -12,6 +13,7 @@ final class CreateBookHandler
 {
 	public function __construct(
 		private readonly BookRepositoryInterface $bookRepository,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
@@ -21,11 +23,11 @@ final class CreateBookHandler
 		if ($this->bookRepository->existsByTitle($command->title))
 		{
 			throw new DuplicateBookException(
-				sprintf('Book with title "%s" already exists.', $command->title)
+				sprintf('Book with title "%s" already exists.', $command->title),
 			);
 		}
 
-		$id = $this->bookRepository->nextId();
+		$id = $this->idGenerator->generate();
 
 		$book = new Book(
 			id: $id,

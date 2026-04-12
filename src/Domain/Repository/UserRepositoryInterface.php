@@ -27,6 +27,4 @@ interface UserRepositoryInterface
 	public function delete(string $id): void;
 
 	public function existsByEmail(string $email): bool;
-
-	public function nextId(): string;
 }

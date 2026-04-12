@@ -13,8 +13,6 @@ final class InMemoryReadingEntryRepository implements ReadingEntryRepositoryInte
 	/** @var array<string, ReadingEntry> */
 	private array $entries = [];
 
-	private int $nextId = 1;
-
 	public function getById(string $id): ReadingEntry
 	{
 		if (!isset($this->entries[$id]))
@@ -31,8 +29,8 @@ final class InMemoryReadingEntryRepository implements ReadingEntryRepositoryInte
 		return array_values(
 			array_filter(
 				$this->entries,
-				static fn(ReadingEntry $e): bool => $e->getUserId() === $userId
-			)
+				static fn(ReadingEntry $e): bool => $e->getUserId() === $userId,
+			),
 		);
 	}
 
@@ -42,8 +40,8 @@ final class InMemoryReadingEntryRepository implements ReadingEntryRepositoryInte
 		return array_values(
 			array_filter(
 				$this->entries,
-				static fn(ReadingEntry $e): bool => $e->getBookId() === $bookId
-			)
+				static fn(ReadingEntry $e): bool => $e->getBookId() === $bookId,
+			),
 		);
 	}
 
@@ -73,10 +71,5 @@ final class InMemoryReadingEntryRepository implements ReadingEntryRepositoryInte
 		}
 
 		return false;
-	}
-
-	public function nextId(): string
-	{
-		return (string)$this->nextId++;
 	}
 }

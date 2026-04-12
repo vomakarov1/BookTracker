@@ -10,6 +10,7 @@ use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Application\Port\ImportParserInterface;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
+use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use PHPUnit\Framework\TestCase;
 
 final class ImportBooksHandlerTest extends TestCase
@@ -23,7 +24,11 @@ final class ImportBooksHandlerTest extends TestCase
 
 	private function makeHandler(ImportParserInterface $parser): ImportBooksHandler
 	{
-		return new ImportBooksHandler($this->repository, ['json' => $parser, 'csv' => $parser]);
+		return new ImportBooksHandler(
+			$this->repository,
+			['json' => $parser, 'csv' => $parser],
+			new InMemoryIdGenerator(),
+		);
 	}
 
 	public function testImportsThreeBooks(): void
@@ -34,7 +39,7 @@ final class ImportBooksHandlerTest extends TestCase
 				new BookDTO('1', 'Clean Code', 'Robert Martin', 'Programming', 5),
 				new BookDTO('2', 'The Pragmatic Programmer', 'David Thomas', 'Programming', 4),
 				new BookDTO('3', 'Domain-Driven Design', 'Eric Evans', 'Architecture', 8),
-			]
+			],
 		);
 
 		$tmpFile = tempnam(sys_get_temp_dir(), 'import_') . '.json';
@@ -57,7 +62,7 @@ final class ImportBooksHandlerTest extends TestCase
 				new BookDTO('1', 'Clean Code', 'Robert Martin', 'Programming', 5),
 				new BookDTO('2', 'Clean Code', 'Robert Martin', 'Programming', 5),
 				new BookDTO('3', 'Domain-Driven Design', 'Eric Evans', 'Architecture', 8),
-			]
+			],
 		);
 
 		$tmpFile = tempnam(sys_get_temp_dir(), 'import_') . '.json';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\User;
 
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Entity\User;
 use BookTracker\Domain\Exception\DuplicateUserException;
 use BookTracker\Domain\Repository\UserRepositoryInterface;
@@ -12,6 +13,7 @@ final class CreateUserHandler
 {
 	public function __construct(
 		private readonly UserRepositoryInterface $userRepository,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
@@ -21,11 +23,11 @@ final class CreateUserHandler
 		if ($this->userRepository->existsByEmail($command->email))
 		{
 			throw new DuplicateUserException(
-				sprintf('User with email "%s" already exists.', $command->email)
+				sprintf('User with email "%s" already exists.', $command->email),
 			);
 		}
 
-		$id = $this->userRepository->nextId();
+		$id = $this->idGenerator->generate();
 
 		$user = new User(
 			id: $id,

@@ -13,8 +13,6 @@ final class InMemoryBookRepository implements BookRepositoryInterface
 	/** @var array<string, Book> */
 	private array $books = [];
 
-	private int $nextId = 1;
-
 	public function getById(string $id): Book
 	{
 		if (!isset($this->books[$id]))
@@ -57,10 +55,5 @@ final class InMemoryBookRepository implements BookRepositoryInterface
 		}
 
 		return false;
-	}
-
-	public function nextId(): string
-	{
-		return (string)$this->nextId++;
 	}
 }
