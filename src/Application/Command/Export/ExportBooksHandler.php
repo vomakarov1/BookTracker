@@ -7,7 +7,9 @@ namespace BookTracker\Application\Command\Export;
 use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Application\Exception\ExportFailedException;
 use BookTracker\Application\Port\ExportFormatterInterface;
+use BookTracker\Application\Port\FileWriterInterface;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
+use RuntimeException;
 
 final class ExportBooksHandler
 {
@@ -17,6 +19,7 @@ final class ExportBooksHandler
 	public function __construct(
 		private readonly BookRepositoryInterface $bookRepository,
 		private readonly array $formatters,
+		private readonly FileWriterInterface $fileWriter,
 	)
 	{
 	}
@@ -33,18 +36,21 @@ final class ExportBooksHandler
 				category: $book->getCategory(),
 				complexity: $book->getComplexity(),
 			),
-			$books
+			$books,
 		);
 
 		$formatter = $this->formatters[$command->format];
 		$content = $formatter->formatBooks($dtos);
 
-		$result = @file_put_contents($command->filePath, $content);
-
-		if ($result === false)
+		try
+		{
+			$this->fileWriter->write($command->filePath, $content);
+		}
+		catch (RuntimeException $e)
 		{
 			throw new ExportFailedException(
-				sprintf('Failed to write file: %s', $command->filePath)
+				sprintf('Failed to write file: %s', $command->filePath),
+				previous: $e,
 			);
 		}
 	}

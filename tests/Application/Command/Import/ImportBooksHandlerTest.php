@@ -10,16 +10,19 @@ use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Application\Port\ImportParserInterface;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
+use BookTracker\Tests\Stub\InMemoryFileReader;
 use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use PHPUnit\Framework\TestCase;
 
 final class ImportBooksHandlerTest extends TestCase
 {
 	private InMemoryBookRepository $repository;
+	private InMemoryFileReader $fileReader;
 
 	protected function setUp(): void
 	{
 		$this->repository = new InMemoryBookRepository();
+		$this->fileReader = new InMemoryFileReader();
 	}
 
 	private function makeHandler(ImportParserInterface $parser): ImportBooksHandler
@@ -28,6 +31,7 @@ final class ImportBooksHandlerTest extends TestCase
 			$this->repository,
 			['json' => $parser, 'csv' => $parser],
 			new InMemoryIdGenerator(),
+			$this->fileReader,
 		);
 	}
 
@@ -42,13 +46,10 @@ final class ImportBooksHandlerTest extends TestCase
 			],
 		);
 
-		$tmpFile = tempnam(sys_get_temp_dir(), 'import_') . '.json';
-		file_put_contents($tmpFile, '[]');
+		$this->fileReader->addFile('/books.json', '[]');
 
-		$command = new ImportBooksCommand($tmpFile, 'json');
+		$command = new ImportBooksCommand('/books.json', 'json');
 		$imported = $this->makeHandler($parser)->handle($command);
-
-		unlink($tmpFile);
 
 		$this->assertSame(3, $imported);
 		$this->assertCount(3, $this->repository->getAll());
@@ -65,25 +66,24 @@ final class ImportBooksHandlerTest extends TestCase
 			],
 		);
 
-		$tmpFile = tempnam(sys_get_temp_dir(), 'import_') . '.json';
-		file_put_contents($tmpFile, '[]');
+		$this->fileReader->addFile('/books.json', '[]');
 
-		$command = new ImportBooksCommand($tmpFile, 'json');
+		$command = new ImportBooksCommand('/books.json', 'json');
 		$imported = $this->makeHandler($parser)->handle($command);
-
-		unlink($tmpFile);
 
 		$this->assertSame(2, $imported);
 		$this->assertCount(2, $this->repository->getAll());
 	}
 
-	public function testThrowsOnNonExistentFile(): void
+	public function testThrowsOnUnreadableFile(): void
 	{
 		$this->expectException(ImportFailedException::class);
 
 		$parser = $this->createStub(ImportParserInterface::class);
+		// File not added to reader — read() will throw RuntimeException
 		$command = new ImportBooksCommand('/non/existent/path/file.json', 'json');
 
 		$this->makeHandler($parser)->handle($command);
 	}
 }
+

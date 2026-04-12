@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Exception;
 
-final class ImportFailedException extends \RuntimeException
+use RuntimeException;
+
+final class ImportFailedException extends RuntimeException
 {
 }

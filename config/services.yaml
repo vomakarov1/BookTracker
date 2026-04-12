@@ -50,9 +50,17 @@ services:
       $storagePath: '%storage_path%'
 
   BookTracker\Infrastructure\UuidV4Generator: ~
+  BookTracker\Infrastructure\LocalFileReader: ~
+  BookTracker\Infrastructure\LocalFileWriter: ~
 
   BookTracker\Application\Port\IdGeneratorInterface:
     alias: BookTracker\Infrastructure\UuidV4Generator
+
+  BookTracker\Application\Port\FileReaderInterface:
+    alias: BookTracker\Infrastructure\LocalFileReader
+
+  BookTracker\Application\Port\FileWriterInterface:
+    alias: BookTracker\Infrastructure\LocalFileWriter
 
   BookTracker\Infrastructure\Import\JsonParser: ~
   BookTracker\Infrastructure\Import\CsvParser: ~

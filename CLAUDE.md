@@ -46,6 +46,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - `GetRecommendationsHandler` — оркестратор: достаёт данные из репозиториев, передаёт в `RecommendationService`
 - `RecommendationDTO` содержит: книгу, score (числовая близость), reason (почему рекомендована)
 - **Генерация ID** — через `Application\Port\IdGeneratorInterface::generate()`. Репозитории НЕ порождают ID. Реализация (`UuidV4Generator`) живёт в Infrastructure и связывается через DI.
+- **Файловый I/O** — через `Application\Port\FileReaderInterface::read()` и `Application\Port\FileWriterInterface::write()`. Хендлеры (`ImportBooksHandler`, `ExportBooksHandler`) не вызывают `file_get_contents`/`file_put_contents` напрямую. Реализации (`LocalFileReader`, `LocalFileWriter`) живут в Infrastructure.
 
 ### Infrastructure
 - Репозитории: хранение в JSON-файлах (`storage/books.json`, `storage/users.json`, `storage/reading_entries.json`). При каждом вызове загружают файл, при сохранении — записывают обратно. При необходимости заменяются на Doctrine DBAL/ORM с маппингом в Infrastructure, НЕ в Domain-сущностях
@@ -53,6 +54,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - `BookFeatureVectorizer` implements `VectorizerInterface` — возвращает `BookVector`
 - `BookVector` — инфраструктурный объект (массив числовых признаков книги для вычисления расстояния). Живёт в Infrastructure/Vectorization, НЕ в Domain
 - `CosineDistance` implements `DistanceMetricInterface`
+- `LocalFileReader` implements `FileReaderInterface`, `LocalFileWriter` implements `FileWriterInterface` — файловый I/O изолирован в Infrastructure
 - Импорт/экспорт: можно использовать `symfony/serializer` в реализациях CsvParser, JsonFormatter и т.д.
 
 ## Конвенции
@@ -77,4 +79,6 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Структура: `tests/` повторяет `src/` (например `tests/Domain/Enum/ReadingStatusTest.php`)
 - In-memory реализации репозиториев для тестов: `tests/Stub/` (InMemoryBookRepository и т.д.)
 - `tests/Stub/InMemoryIdGenerator` — стаб `IdGeneratorInterface`, возвращает последовательные строковые числа ("1", "2", …)
+- `tests/Stub/InMemoryFileReader` — стаб `FileReaderInterface`, хранит файлы в памяти; `addFile(path, content)` регистрирует содержимое, бросает `\RuntimeException` для незарегистрированных путей
+- `tests/Stub/InMemoryFileWriter` — стаб `FileWriterInterface`, хранит записанное содержимое в памяти; `getContent(path)` / `hasFile(path)` для проверки в тестах
 - После каждого изменения: `./vendor/bin/phpunit` + `./vendor/bin/phpstan analyse`
