@@ -41,7 +41,11 @@ final class ImportBooksHandler
 			);
 		}
 
-		$parser = $this->parsers[$command->format->value];
+		$parser = $this->parsers[$command->format->value]
+			?? throw new ImportFailedException(
+				sprintf('No parser registered for format: %s', $command->format->value),
+			);
+
 		$bookDTOs = $parser->parseBooks($content);
 
 		foreach ($bookDTOs as $dto)

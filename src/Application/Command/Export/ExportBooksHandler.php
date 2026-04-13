@@ -29,7 +29,7 @@ final class ExportBooksHandler
 		$books = $this->bookRepository->getAll();
 
 		$dtos = array_map(
-			fn($book) => new BookDTO(
+			static fn($book) => new BookDTO(
 				id: $book->getId(),
 				title: $book->getTitle(),
 				author: $book->getAuthor(),
@@ -39,7 +39,11 @@ final class ExportBooksHandler
 			$books,
 		);
 
-		$formatter = $this->formatters[$command->format->value];
+		$formatter = $this->formatters[$command->format->value]
+			?? throw new ExportFailedException(
+				sprintf('No formatter registered for format: %s', $command->format->value),
+			);
+
 		$content = $formatter->formatBooks($dtos);
 
 		try
