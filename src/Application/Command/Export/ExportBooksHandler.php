@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Application\Command\Export;
 
 use BookTracker\Application\DTO\BookDTO;
+use BookTracker\Application\DTO\BookDTOAssembler;
 use BookTracker\Application\Exception\ExportFailedException;
 use BookTracker\Application\Port\ExportFormatterInterface;
 use BookTracker\Application\Port\FileWriterInterface;
@@ -29,13 +30,7 @@ final class ExportBooksHandler
 		$books = $this->bookRepository->getAll();
 
 		$dtos = array_map(
-			static fn($book) => new BookDTO(
-				id: $book->getId(),
-				title: $book->getTitle(),
-				author: $book->getAuthor(),
-				category: $book->getCategory(),
-				complexity: $book->getComplexity(),
-			),
+			static fn($book) => BookDTOAssembler::fromEntity($book),
 			$books,
 		);
 

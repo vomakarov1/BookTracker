@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Application\Query\Book;
 
 use BookTracker\Application\DTO\BookDTO;
+use BookTracker\Application\DTO\BookDTOAssembler;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
 
@@ -33,15 +34,9 @@ final class GetBooksListHandler
 
 		return array_values(
 			array_map(
-				static fn(Book $b) => new BookDTO(
-					id: $b->getId(),
-					title: $b->getTitle(),
-					author: $b->getAuthor(),
-					category: $b->getCategory(),
-					complexity: $b->getComplexity(),
-				),
+				static fn(Book $b) => BookDTOAssembler::fromEntity($b),
 				$books,
-			)
+			),
 		);
 	}
 }
