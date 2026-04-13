@@ -7,6 +7,10 @@ services:
     autoconfigure: true
     public: false
 
+  _instanceof:
+    Symfony\Component\Console\Command\Command:
+      public: true
+
   BookTracker\Application\Command\Book\CreateBookHandler: ~
   BookTracker\Application\Command\Book\DeleteBookHandler: ~
   BookTracker\Application\Command\User\CreateUserHandler: ~
@@ -96,66 +100,19 @@ services:
   BookTracker\Domain\Service\DistanceMetricInterface:
     alias: BookTracker\Infrastructure\Vectorization\CosineDistance
 
-  BookTracker\Adapters\Cli\CreateBookCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\DeleteBookCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ListBooksCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ShowBookCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\CreateUserCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\DeleteUserCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ListUsersCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ShowUserCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\CreateReadingEntryCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ChangeReadingStatusCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\RateReadingEntryCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ListReadingEntriesCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\DeleteReadingEntryCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\GetRecommendationsCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ImportBooksCliCommand:
-    public: true
-    tags: [ 'console.command' ]
-
-  BookTracker\Adapters\Cli\ExportBooksCliCommand:
-    public: true
-    tags: [ 'console.command' ]
+  BookTracker\Adapters\Cli\CreateBookCliCommand: ~
+  BookTracker\Adapters\Cli\DeleteBookCliCommand: ~
+  BookTracker\Adapters\Cli\ListBooksCliCommand: ~
+  BookTracker\Adapters\Cli\ShowBookCliCommand: ~
+  BookTracker\Adapters\Cli\CreateUserCliCommand: ~
+  BookTracker\Adapters\Cli\DeleteUserCliCommand: ~
+  BookTracker\Adapters\Cli\ListUsersCliCommand: ~
+  BookTracker\Adapters\Cli\ShowUserCliCommand: ~
+  BookTracker\Adapters\Cli\CreateReadingEntryCliCommand: ~
+  BookTracker\Adapters\Cli\ChangeReadingStatusCliCommand: ~
+  BookTracker\Adapters\Cli\RateReadingEntryCliCommand: ~
+  BookTracker\Adapters\Cli\ListReadingEntriesCliCommand: ~
+  BookTracker\Adapters\Cli\DeleteReadingEntryCliCommand: ~
+  BookTracker\Adapters\Cli\GetRecommendationsCliCommand: ~
+  BookTracker\Adapters\Cli\ImportBooksCliCommand: ~
+  BookTracker\Adapters\Cli\ExportBooksCliCommand: ~

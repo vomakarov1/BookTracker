@@ -6,12 +6,14 @@ namespace BookTracker\Adapters\Cli;
 
 use BookTracker\Application\Query\ReadingEntry\GetReadingEntriesHandler;
 use BookTracker\Application\Query\ReadingEntry\GetReadingEntriesQuery;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'reading:list', description: 'List reading entries for a user')]
 final class ListReadingEntriesCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class ListReadingEntriesCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('reading:list')
-			->setDescription('List reading entries for a user')
 			->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID')
 		;
 	}
@@ -56,7 +56,7 @@ final class ListReadingEntriesCliCommand extends Command
 					$entry->rating !== null ? (string)$entry->rating : '-',
 					$entry->startedAt,
 					$entry->finishedAt ?? '-',
-				]
+				],
 			);
 		}
 

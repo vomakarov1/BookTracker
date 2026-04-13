@@ -7,11 +7,13 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Query\Book\GetBookHandler;
 use BookTracker\Application\Query\Book\GetBookQuery;
 use BookTracker\Domain\Exception\BookNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'book:show', description: 'Show book details')]
 final class ShowBookCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class ShowBookCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('book:show')
-			->setDescription('Show book details')
 			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Book ID')
 		;
 	}

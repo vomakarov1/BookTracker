@@ -10,11 +10,13 @@ use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Exception\UserNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'reading:create', description: 'Create a reading entry for a user and book')]
 final class CreateReadingEntryCliCommand extends Command
 {
 	public function __construct(
@@ -28,8 +30,6 @@ final class CreateReadingEntryCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('reading:create')
-			->setDescription('Create a reading entry for a user and book')
 			->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID')
 			->addOption('book-id', null, InputOption::VALUE_REQUIRED, 'Book ID')
 		;

@@ -9,11 +9,13 @@ use BookTracker\Application\Command\ReadingEntry\ChangeReadingStatusHandler;
 use BookTracker\Application\Exception\ValidationException;
 use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'reading:status', description: 'Change the status of a reading entry')]
 final class ChangeReadingStatusCliCommand extends Command
 {
 	public function __construct(
@@ -26,8 +28,6 @@ final class ChangeReadingStatusCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('reading:status')
-			->setDescription('Change the status of a reading entry')
 			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Reading entry ID')
 			->addOption('status', null, InputOption::VALUE_REQUIRED, 'New status (planned|reading|finished|dropped)')
 		;

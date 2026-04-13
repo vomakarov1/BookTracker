@@ -7,11 +7,13 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Query\User\GetUserHandler;
 use BookTracker\Application\Query\User\GetUserQuery;
 use BookTracker\Domain\Exception\UserNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'user:show', description: 'Show user details')]
 final class ShowUserCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class ShowUserCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('user:show')
-			->setDescription('Show user details')
 			->addOption('id', null, InputOption::VALUE_REQUIRED, 'User ID')
 		;
 	}

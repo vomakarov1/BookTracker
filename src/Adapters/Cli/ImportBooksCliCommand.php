@@ -7,11 +7,13 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Command\Import\ImportBooksCommand;
 use BookTracker\Application\Command\Import\ImportBooksHandler;
 use BookTracker\Application\Exception\ImportFailedException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'import:books', description: 'Import books from a file')]
 final class ImportBooksCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class ImportBooksCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('import:books')
-			->setDescription('Import books from a file')
 			->addOption('file', null, InputOption::VALUE_REQUIRED, 'Path to the import file')
 			->addOption('format', null, InputOption::VALUE_OPTIONAL, 'File format (json|csv)', 'json')
 		;

@@ -7,13 +7,23 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 $container = new ContainerBuilder();
 $container->setParameter('project_dir', dirname(__DIR__));
 $container->setParameter('storage_path', dirname(__DIR__) . '/storage');
+
+$container->registerAttributeForAutoconfiguration(
+		AsCommand::class,
+		static function (ChildDefinition $definition, AsCommand $attribute): void
+		{
+			$definition->addTag('console.command', ['command' => $attribute->name]);
+		},
+);
 
 $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__) . '/config'));
 $loader->load('services.yaml');

@@ -6,12 +6,14 @@ namespace BookTracker\Adapters\Cli;
 
 use BookTracker\Application\Query\Recommendation\GetRecommendationsHandler;
 use BookTracker\Application\Query\Recommendation\GetRecommendationsQuery;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'recommend', description: 'Get book recommendations for a user')]
 final class GetRecommendationsCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class GetRecommendationsCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('recommend')
-			->setDescription('Get book recommendations for a user')
 			->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID')
 			->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Number of recommendations', '5')
 		;
@@ -49,7 +49,7 @@ final class GetRecommendationsCliCommand extends Command
 			new GetRecommendationsQuery(
 				userId: $userId,
 				limit: $limit,
-			)
+			),
 		);
 
 		if ($recommendations === [])
@@ -71,7 +71,7 @@ final class GetRecommendationsCliCommand extends Command
 					$dto->book->author,
 					sprintf('%.4f', $dto->score),
 					$dto->reason,
-				]
+				],
 			);
 		}
 

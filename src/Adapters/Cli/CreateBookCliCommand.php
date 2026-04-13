@@ -9,11 +9,13 @@ use BookTracker\Application\Command\Book\CreateBookHandler;
 use BookTracker\Application\Exception\ValidationException;
 use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Exception\DuplicateBookException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'book:create', description: 'Create a new book')]
 final class CreateBookCliCommand extends Command
 {
 	public function __construct(
@@ -27,8 +29,6 @@ final class CreateBookCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('book:create')
-			->setDescription('Create a new book')
 			->addOption('title', null, InputOption::VALUE_REQUIRED, 'Book title')
 			->addOption('author', null, InputOption::VALUE_REQUIRED, 'Book author')
 			->addOption('category', null, InputOption::VALUE_REQUIRED, 'Book category')

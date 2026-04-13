@@ -7,11 +7,13 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Command\ReadingEntry\DeleteReadingEntryCommand;
 use BookTracker\Application\Command\ReadingEntry\DeleteReadingEntryHandler;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'reading:delete', description: 'Delete a reading entry by ID')]
 final class DeleteReadingEntryCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class DeleteReadingEntryCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('reading:delete')
-			->setDescription('Delete a reading entry by ID')
 			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Reading entry ID')
 		;
 	}

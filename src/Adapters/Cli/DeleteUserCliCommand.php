@@ -7,11 +7,13 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Command\User\DeleteUserCommand;
 use BookTracker\Application\Command\User\DeleteUserHandler;
 use BookTracker\Domain\Exception\UserNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'user:delete', description: 'Delete a user by ID')]
 final class DeleteUserCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class DeleteUserCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('user:delete')
-			->setDescription('Delete a user by ID')
 			->addOption('id', null, InputOption::VALUE_REQUIRED, 'User ID')
 		;
 	}

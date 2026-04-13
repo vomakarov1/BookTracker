@@ -6,11 +6,13 @@ namespace BookTracker\Adapters\Cli;
 
 use BookTracker\Application\Query\User\GetUsersListHandler;
 use BookTracker\Application\Query\User\GetUsersListQuery;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'user:list', description: 'List all users')]
 final class ListUsersCliCommand extends Command
 {
 	public function __construct(
@@ -18,14 +20,6 @@ final class ListUsersCliCommand extends Command
 	)
 	{
 		parent::__construct();
-	}
-
-	protected function configure(): void
-	{
-		$this
-			->setName('user:list')
-			->setDescription('List all users')
-		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int

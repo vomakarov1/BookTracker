@@ -7,11 +7,13 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Command\Book\DeleteBookCommand;
 use BookTracker\Application\Command\Book\DeleteBookHandler;
 use BookTracker\Domain\Exception\BookNotFoundException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'book:delete', description: 'Delete a book by ID')]
 final class DeleteBookCliCommand extends Command
 {
 	public function __construct(
@@ -24,8 +26,6 @@ final class DeleteBookCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setName('book:delete')
-			->setDescription('Delete a book by ID')
 			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Book ID')
 		;
 	}
