@@ -39,15 +39,27 @@ services:
 
   BookTracker\Infrastructure\Repository\JsonBookRepository:
     arguments:
-      $storagePath: '%storage_path%'
+      $storage: '@book.json_storage'
 
   BookTracker\Infrastructure\Repository\JsonUserRepository:
     arguments:
-      $storagePath: '%storage_path%'
+      $storage: '@user.json_storage'
 
   BookTracker\Infrastructure\Repository\JsonReadingEntryRepository:
     arguments:
-      $storagePath: '%storage_path%'
+      $storage: '@reading_entry.json_storage'
+
+  book.json_storage:
+    class: BookTracker\Infrastructure\Storage\JsonFileStorage
+    arguments: [ '%storage_path%/books.json' ]
+
+  user.json_storage:
+    class: BookTracker\Infrastructure\Storage\JsonFileStorage
+    arguments: [ '%storage_path%/users.json' ]
+
+  reading_entry.json_storage:
+    class: BookTracker\Infrastructure\Storage\JsonFileStorage
+    arguments: [ '%storage_path%/reading_entries.json' ]
 
   BookTracker\Infrastructure\UuidV4Generator: ~
   BookTracker\Infrastructure\LocalFileReader: ~

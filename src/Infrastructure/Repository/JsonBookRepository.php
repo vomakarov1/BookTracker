@@ -8,62 +8,13 @@ use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
 use BookTracker\Domain\ValueObject\BookComplexity;
+use BookTracker\Infrastructure\Storage\JsonFileStorage;
 use JsonException;
-use RuntimeException;
 
 final class JsonBookRepository implements BookRepositoryInterface
 {
-	private string $filePath;
-
-	public function __construct(string $storagePath)
+	public function __construct(private readonly JsonFileStorage $storage)
 	{
-		$this->filePath = rtrim($storagePath, '/') . '/books.json';
-
-		if (!is_dir($storagePath) && !mkdir($storagePath, 0755, true) && !is_dir($storagePath))
-		{
-			throw new RuntimeException(sprintf('Directory "%s" was not created', $storagePath));
-		}
-
-		if (!file_exists($this->filePath))
-		{
-			file_put_contents($this->filePath, '[]');
-		}
-	}
-
-	/**
-	 * @return array<int, array<string, mixed>>
-	 * @throws JsonException
-	 */
-	private function loadData(): array
-	{
-		$content = file_get_contents($this->filePath);
-
-		if ($content === false)
-		{
-			throw new RuntimeException(sprintf('Failed to read storage file: %s', $this->filePath));
-		}
-
-		$decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-
-		if (!is_array($decoded))
-		{
-			throw new RuntimeException(sprintf('Storage file contains invalid data: %s', $this->filePath));
-		}
-
-		/** @var array<int, array<string, mixed>> $decoded */
-		return $decoded;
-	}
-
-	/**
-	 * @param array<int, array<string, mixed>> $data
-	 * @throws JsonException
-	 */
-	private function writeData(array $data): void
-	{
-		file_put_contents(
-			$this->filePath,
-			json_encode(array_values($data), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
-		);
 	}
 
 	/**
@@ -99,7 +50,7 @@ final class JsonBookRepository implements BookRepositoryInterface
 	 */
 	public function getById(string $id): Book
 	{
-		foreach ($this->loadData() as $row)
+		foreach ($this->storage->load() as $row)
 		{
 			if ((string)$row['id'] === $id)
 			{
@@ -124,7 +75,7 @@ final class JsonBookRepository implements BookRepositoryInterface
 		$index = array_flip($ids);
 		$result = [];
 
-		foreach ($this->loadData() as $row)
+		foreach ($this->storage->load() as $row)
 		{
 			$id = (string)$row['id'];
 			if (isset($index[$id]))
@@ -144,7 +95,7 @@ final class JsonBookRepository implements BookRepositoryInterface
 	{
 		$result = [];
 
-		foreach ($this->loadData() as $row)
+		foreach ($this->storage->load() as $row)
 		{
 			$result[] = $this->hydrate($row);
 		}
@@ -157,21 +108,21 @@ final class JsonBookRepository implements BookRepositoryInterface
 	 */
 	public function save(Book $book): void
 	{
-		$data = $this->loadData();
+		$data = $this->storage->load();
 
 		foreach ($data as $i => $row)
 		{
 			if ((string)$row['id'] === $book->getId())
 			{
 				$data[$i] = $this->toRow($book);
-				$this->writeData($data);
+				$this->storage->write($data);
 
 				return;
 			}
 		}
 
 		$data[] = $this->toRow($book);
-		$this->writeData($data);
+		$this->storage->write($data);
 	}
 
 	/**
@@ -179,14 +130,14 @@ final class JsonBookRepository implements BookRepositoryInterface
 	 */
 	public function delete(string $id): void
 	{
-		$data = $this->loadData();
+		$data = $this->storage->load();
 
 		foreach ($data as $i => $row)
 		{
 			if ((string)$row['id'] === $id)
 			{
 				unset($data[$i]);
-				$this->writeData($data);
+				$this->storage->write($data);
 
 				return;
 			}
@@ -200,7 +151,7 @@ final class JsonBookRepository implements BookRepositoryInterface
 	 */
 	public function existsByTitle(string $title): bool
 	{
-		foreach ($this->loadData() as $row)
+		foreach ($this->storage->load() as $row)
 		{
 			if ((string)$row['title'] === $title)
 			{
