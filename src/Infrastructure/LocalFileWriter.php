@@ -6,16 +6,24 @@ namespace BookTracker\Infrastructure;
 
 use BookTracker\Application\Port\FileWriterInterface;
 use RuntimeException;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
 
 final class LocalFileWriter implements FileWriterInterface
 {
+	public function __construct(private readonly Filesystem $filesystem)
+	{
+	}
+
 	public function write(string $path, string $content): void
 	{
-		$result = @file_put_contents($path, $content);
-
-		if ($result === false)
+		try
 		{
-			throw new RuntimeException(sprintf('Failed to write file: %s', $path));
+			$this->filesystem->dumpFile($path, $content);
+		}
+		catch (IOException $e)
+		{
+			throw new RuntimeException(sprintf('Failed to write file: %s', $path), previous: $e);
 		}
 	}
 }

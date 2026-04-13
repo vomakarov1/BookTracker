@@ -6,21 +6,18 @@ namespace BookTracker\Infrastructure\Storage;
 
 use JsonException;
 use RuntimeException;
+use Symfony\Component\Filesystem\Filesystem;
 
 final class JsonFileStorage
 {
-	public function __construct(private readonly string $filePath)
+	public function __construct(
+		private readonly string $filePath,
+		private readonly Filesystem $filesystem,
+	)
 	{
-		$dir = dirname($filePath);
-
-		if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir))
+		if (!$this->filesystem->exists($filePath))
 		{
-			throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
-		}
-
-		if (!file_exists($filePath))
-		{
-			file_put_contents($filePath, '[]');
+			$this->filesystem->dumpFile($filePath, '[]');
 		}
 	}
 
@@ -30,12 +27,12 @@ final class JsonFileStorage
 	 */
 	public function load(): array
 	{
-		$content = file_get_contents($this->filePath);
-
-		if ($content === false)
+		if (!$this->filesystem->exists($this->filePath))
 		{
-			throw new RuntimeException(sprintf('Failed to read storage file: %s', $this->filePath));
+			throw new RuntimeException(sprintf('Storage file not found: %s', $this->filePath));
 		}
+
+		$content = (string)file_get_contents($this->filePath);
 
 		$decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
@@ -54,9 +51,9 @@ final class JsonFileStorage
 	 */
 	public function write(array $data): void
 	{
-		file_put_contents(
+		$this->filesystem->dumpFile(
 			$this->filePath,
-			json_encode(array_values($data), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+			(string)json_encode(array_values($data), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
 		);
 	}
 }

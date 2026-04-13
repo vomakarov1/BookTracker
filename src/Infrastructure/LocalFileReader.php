@@ -6,18 +6,21 @@ namespace BookTracker\Infrastructure;
 
 use BookTracker\Application\Port\FileReaderInterface;
 use RuntimeException;
+use Symfony\Component\Filesystem\Filesystem;
 
 final class LocalFileReader implements FileReaderInterface
 {
+	public function __construct(private readonly Filesystem $filesystem)
+	{
+	}
+
 	public function read(string $path): string
 	{
-		$content = @file_get_contents($path);
-
-		if ($content === false)
+		if (!$this->filesystem->exists($path))
 		{
-			throw new RuntimeException(sprintf('Failed to read file: %s', $path));
+			throw new RuntimeException(sprintf('File not found: %s', $path));
 		}
 
-		return $content;
+		return (string)file_get_contents($path);
 	}
 }
