@@ -46,6 +46,13 @@ final class DeleteReadingEntryCliCommand extends Command
 
 		try
 		{
+			if (!$io->confirm(sprintf('Delete reading entry "%s"? This action cannot be undone.', $id), false))
+			{
+				$io->note('Aborted.');
+
+				return Command::SUCCESS;
+			}
+
 			$this->handler->handle(new DeleteReadingEntryCommand($id));
 
 			$io->success(sprintf('Reading entry "%s" deleted.', $id));

@@ -46,6 +46,13 @@ final class DeleteBookCliCommand extends Command
 
 		try
 		{
+			if (!$io->confirm(sprintf('Delete book "%s"? This action cannot be undone.', $id), false))
+			{
+				$io->note('Aborted.');
+
+				return Command::SUCCESS;
+			}
+
 			$this->handler->handle(new DeleteBookCommand($id));
 
 			$io->success(sprintf('Book "%s" deleted.', $id));

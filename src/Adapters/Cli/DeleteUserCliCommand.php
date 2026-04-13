@@ -46,6 +46,13 @@ final class DeleteUserCliCommand extends Command
 
 		try
 		{
+			if (!$io->confirm(sprintf('Delete user "%s"? This action cannot be undone.', $id), false))
+			{
+				$io->note('Aborted.');
+
+				return Command::SUCCESS;
+			}
+
 			$this->handler->handle(new DeleteUserCommand($id));
 
 			$io->success(sprintf('User "%s" deleted.', $id));
