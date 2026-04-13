@@ -41,7 +41,7 @@ final class ImportBooksHandler
 			);
 		}
 
-		$parser = $this->parsers[$command->format];
+		$parser = $this->parsers[$command->format->value];
 		$bookDTOs = $parser->parseBooks($content);
 
 		$imported = 0;

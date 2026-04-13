@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\Export;
 
+use BookTracker\Application\Enum\BookFileFormat;
 use BookTracker\Application\Exception\ValidationException;
+use ValueError;
 
 final readonly class ExportBooksCommand
 {
 	public string $filePath;
-	public string $format;
-
-	private const array ALLOWED_FORMATS = ['json', 'csv'];
+	public BookFileFormat $format;
 
 	public function __construct(string $filePath, string $format)
 	{
@@ -20,14 +20,20 @@ final readonly class ExportBooksCommand
 			throw new ValidationException('File path must not be empty.');
 		}
 
-		if (!in_array($format, self::ALLOWED_FORMATS, true))
+		try
+		{
+			$this->format = BookFileFormat::from($format);
+		}
+		catch (ValueError)
 		{
 			throw new ValidationException(
-				sprintf('Format must be one of: %s.', implode(', ', self::ALLOWED_FORMATS))
+				sprintf(
+					'Format must be one of: %s.',
+					implode(', ', array_column(BookFileFormat::cases(), 'value')),
+				),
 			);
 		}
 
 		$this->filePath = $filePath;
-		$this->format = $format;
 	}
 }

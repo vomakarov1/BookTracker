@@ -39,7 +39,7 @@ final class ExportBooksHandler
 			$books,
 		);
 
-		$formatter = $this->formatters[$command->format];
+		$formatter = $this->formatters[$command->format->value];
 		$content = $formatter->formatBooks($dtos);
 
 		try
