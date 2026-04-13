@@ -7,82 +7,36 @@ namespace BookTracker\Infrastructure\Import;
 use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Application\Port\ImportParserInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 final class CsvParser implements ImportParserInterface
 {
+	public function __construct(private readonly SerializerInterface $serializer)
+	{
+	}
+
 	/**
 	 * @return array<BookDTO>
 	 */
 	public function parseBooks(string $content): array
 	{
-		$rows = $this->parseRows($content);
-
-		if (count($rows) === 0)
+		if (trim($content) === '')
 		{
 			return [];
 		}
 
-		$expectedColumns = 5;
-		$result = [];
-
-		foreach ($rows as $index => $row)
+		try
 		{
-			if (count($row) !== $expectedColumns)
-			{
-				throw new ImportFailedException(
-					sprintf(
-						'Row %d has %d columns, expected %d.',
-						$index + 1,
-						count($row),
-						$expectedColumns,
-					),
-				);
-			}
-
-			$result[] = new BookDTO(
-				id: $row[0],
-				title: $row[1],
-				author: $row[2],
-				category: $row[3],
-				complexity: (int)$row[4],
+			/** @var array<BookDTO> */
+			return $this->serializer->deserialize($content, BookDTO::class . '[]', 'csv');
+		}
+		catch (Throwable $e)
+		{
+			throw new ImportFailedException(
+				sprintf('Invalid CSV: %s', $e->getMessage()),
+				previous: $e,
 			);
 		}
-
-		return $result;
-	}
-
-	/**
-	 * @return array<array<string>>
-	 */
-	private function parseRows(string $content): array
-	{
-		$trimmed = trim($content);
-
-		if ($trimmed === '')
-		{
-			return [];
-		}
-
-		$lines = explode("\n", $trimmed);
-
-		// Skip header row
-		array_shift($lines);
-
-		$rows = [];
-
-		foreach ($lines as $line)
-		{
-			$line = trim($line);
-
-			if ($line === '')
-			{
-				continue;
-			}
-
-			$row = str_getcsv($line, ',', '"', '');
-			$rows[] = array_map(static fn(string|null $v): string => trim((string)$v), $row);
-		}
-
-		return $rows;
 	}
 }

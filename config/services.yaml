@@ -67,6 +67,9 @@ services:
 
   Symfony\Component\Filesystem\Filesystem: ~
 
+  Symfony\Component\Serializer\SerializerInterface:
+    factory: [ 'BookTracker\Infrastructure\Serializer\AppSerializerFactory', 'create' ]
+
   BookTracker\Infrastructure\UuidV4Generator: ~
   BookTracker\Infrastructure\LocalFileReader: ~
   BookTracker\Infrastructure\LocalFileWriter: ~

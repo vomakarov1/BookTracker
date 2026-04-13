@@ -6,6 +6,7 @@ namespace BookTracker\Tests\Infrastructure\Export;
 
 use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Infrastructure\Export\JsonFormatter;
+use BookTracker\Infrastructure\Serializer\AppSerializerFactory;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +17,7 @@ final class JsonFormatterTest extends TestCase
 	 */
 	public function testFormatBooksReturnsValidJson(): void
 	{
-		$formatter = new JsonFormatter();
+		$formatter = new JsonFormatter(AppSerializerFactory::create());
 
 		$books = [
 			new BookDTO('1', 'Clean Code', 'Robert Martin', 'Programming', 5),

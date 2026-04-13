@@ -6,6 +6,7 @@ namespace BookTracker\Tests\Infrastructure\Import;
 
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Infrastructure\Import\JsonParser;
+use BookTracker\Infrastructure\Serializer\AppSerializerFactory;
 use PHPUnit\Framework\TestCase;
 
 final class JsonParserTest extends TestCase
@@ -14,7 +15,7 @@ final class JsonParserTest extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->parser = new JsonParser();
+		$this->parser = new JsonParser(AppSerializerFactory::create());
 	}
 
 	public function testParseBooksReturnsCorrectDTOs(): void

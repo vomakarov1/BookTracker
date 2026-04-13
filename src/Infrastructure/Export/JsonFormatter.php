@@ -6,27 +6,28 @@ namespace BookTracker\Infrastructure\Export;
 
 use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Application\Port\ExportFormatterInterface;
-use JsonException;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class JsonFormatter implements ExportFormatterInterface
 {
+	public function __construct(private readonly SerializerInterface $serializer)
+	{
+	}
+
 	/**
 	 * @param array<BookDTO> $books
-	 * @throws JsonException
+	 * @throws ExceptionInterface
 	 */
 	public function formatBooks(array $books): string
 	{
-		$data = array_map(
-			static fn(BookDTO $book) => [
-				'id' => $book->id,
-				'title' => $book->title,
-				'author' => $book->author,
-				'category' => $book->category,
-				'complexity' => $book->complexity,
-			],
+		return $this->serializer->serialize(
 			$books,
+			'json',
+			[
+				JsonEncode::OPTIONS => JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE,
+			],
 		);
-
-		return (string)json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 }

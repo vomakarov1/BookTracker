@@ -6,6 +6,7 @@ namespace BookTracker\Tests\Infrastructure\Import;
 
 use BookTracker\Application\Exception\ImportFailedException;
 use BookTracker\Infrastructure\Import\CsvParser;
+use BookTracker\Infrastructure\Serializer\AppSerializerFactory;
 use PHPUnit\Framework\TestCase;
 
 final class CsvParserTest extends TestCase
@@ -14,7 +15,7 @@ final class CsvParserTest extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->parser = new CsvParser();
+		$this->parser = new CsvParser(AppSerializerFactory::create());
 	}
 
 	public function testParseBooksReturnsCorrectDTOs(): void

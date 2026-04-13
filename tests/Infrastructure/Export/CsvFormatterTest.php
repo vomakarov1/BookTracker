@@ -6,13 +6,14 @@ namespace BookTracker\Tests\Infrastructure\Export;
 
 use BookTracker\Application\DTO\BookDTO;
 use BookTracker\Infrastructure\Export\CsvFormatter;
+use BookTracker\Infrastructure\Serializer\AppSerializerFactory;
 use PHPUnit\Framework\TestCase;
 
 final class CsvFormatterTest extends TestCase
 {
 	public function testFormatBooksQuotesFieldsContainingCommas(): void
 	{
-		$formatter = new CsvFormatter();
+		$formatter = new CsvFormatter(AppSerializerFactory::create());
 
 		$books = [
 			new BookDTO('1', 'War, and Peace', 'Tolstoy', 'Fiction', 6),
@@ -28,7 +29,7 @@ final class CsvFormatterTest extends TestCase
 
 	public function testFormatBooksReturnsHeaderAndDataRows(): void
 	{
-		$formatter = new CsvFormatter();
+		$formatter = new CsvFormatter(AppSerializerFactory::create());
 
 		$books = [
 			new BookDTO('1', 'Clean Code', 'Robert Martin', 'Programming', 5),
