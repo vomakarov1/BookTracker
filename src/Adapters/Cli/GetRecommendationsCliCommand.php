@@ -8,10 +8,10 @@ use BookTracker\Application\Query\Recommendation\GetRecommendationsHandler;
 use BookTracker\Application\Query\Recommendation\GetRecommendationsQuery;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'recommend', description: 'Get book recommendations for a user')]
 final class GetRecommendationsCliCommand extends Command
@@ -33,11 +33,13 @@ final class GetRecommendationsCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$userId = $input->getOption('user-id');
 
 		if (!is_string($userId) || $userId === '')
 		{
-			$output->writeln('<error>Option --user-id is required.</error>');
+			$io->error('Option --user-id is required.');
 
 			return Command::FAILURE;
 		}
@@ -54,28 +56,25 @@ final class GetRecommendationsCliCommand extends Command
 
 		if ($recommendations === [])
 		{
-			$output->writeln('No recommendations found. Read more books first!');
+			$io->warning('No recommendations found. Read more books first!');
 
 			return Command::SUCCESS;
 		}
 
-		$table = new Table($output);
-		$table->setHeaders(['#', 'Title', 'Author', 'Score', 'Reason']);
+		$rows = [];
 
 		foreach ($recommendations as $i => $dto)
 		{
-			$table->addRow(
-				[
-					(string)($i + 1),
-					$dto->book->title,
-					$dto->book->author,
-					sprintf('%.4f', $dto->score),
-					$dto->reason,
-				],
-			);
+			$rows[] = [
+				(string)($i + 1),
+				$dto->book->title,
+				$dto->book->author,
+				sprintf('%.4f', $dto->score),
+				$dto->reason,
+			];
 		}
 
-		$table->render();
+		$io->table(['#', 'Title', 'Author', 'Score', 'Reason'], $rows);
 
 		return Command::SUCCESS;
 	}

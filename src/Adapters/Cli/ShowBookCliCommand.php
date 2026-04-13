@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'book:show', description: 'Show book details')]
 final class ShowBookCliCommand extends Command
@@ -32,11 +33,13 @@ final class ShowBookCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$id = $input->getOption('id');
 
 		if (!is_string($id) || $id === '')
 		{
-			$output->writeln('<error>Option --id is required.</error>');
+			$io->error('Option --id is required.');
 
 			return Command::FAILURE;
 		}
@@ -45,17 +48,19 @@ final class ShowBookCliCommand extends Command
 		{
 			$book = $this->handler->handle(new GetBookQuery($id));
 
-			$output->writeln(sprintf('ID:         %s', $book->id));
-			$output->writeln(sprintf('Title:      %s', $book->title));
-			$output->writeln(sprintf('Author:     %s', $book->author));
-			$output->writeln(sprintf('Category:   %s', $book->category));
-			$output->writeln(sprintf('Complexity: %d', $book->complexity));
+			$io->definitionList(
+				['ID' => $book->id],
+				['Title' => $book->title],
+				['Author' => $book->author],
+				['Category' => $book->category],
+				['Complexity' => (string)$book->complexity],
+			);
 
 			return Command::SUCCESS;
 		}
 		catch (BookNotFoundException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

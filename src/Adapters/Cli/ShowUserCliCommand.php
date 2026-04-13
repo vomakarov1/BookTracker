@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'user:show', description: 'Show user details')]
 final class ShowUserCliCommand extends Command
@@ -32,11 +33,13 @@ final class ShowUserCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$id = $input->getOption('id');
 
 		if (!is_string($id) || $id === '')
 		{
-			$output->writeln('<error>Option --id is required.</error>');
+			$io->error('Option --id is required.');
 
 			return Command::FAILURE;
 		}
@@ -45,15 +48,17 @@ final class ShowUserCliCommand extends Command
 		{
 			$user = $this->handler->handle(new GetUserQuery($id));
 
-			$output->writeln(sprintf('ID:    %s', $user->id));
-			$output->writeln(sprintf('Name:  %s', $user->name));
-			$output->writeln(sprintf('Email: %s', $user->email));
+			$io->definitionList(
+				['ID' => $user->id],
+				['Name' => $user->name],
+				['Email' => $user->email],
+			);
 
 			return Command::SUCCESS;
 		}
 		catch (UserNotFoundException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

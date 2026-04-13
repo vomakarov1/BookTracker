@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'book:create', description: 'Create a new book')]
 final class CreateBookCliCommand extends Command
@@ -38,6 +39,8 @@ final class CreateBookCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$title = $input->getOption('title');
 		$author = $input->getOption('author');
 		$category = $input->getOption('category');
@@ -45,7 +48,7 @@ final class CreateBookCliCommand extends Command
 
 		if (!is_string($title) || !is_string($author) || !is_string($category) || $complexity === null)
 		{
-			$output->writeln('<error>Options --title, --author, --category, --complexity are required.</error>');
+			$io->error('Options --title, --author, --category, --complexity are required.');
 
 			return Command::FAILURE;
 		}
@@ -64,13 +67,13 @@ final class CreateBookCliCommand extends Command
 
 			$this->handler->handle($command);
 
-			$output->writeln(sprintf('Book created with ID: %s', $id));
+			$io->success(sprintf('Book created with ID: %s', $id));
 
 			return Command::SUCCESS;
 		}
 		catch (ValidationException|DuplicateBookException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

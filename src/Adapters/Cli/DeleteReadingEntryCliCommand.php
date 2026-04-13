@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'reading:delete', description: 'Delete a reading entry by ID')]
 final class DeleteReadingEntryCliCommand extends Command
@@ -32,11 +33,13 @@ final class DeleteReadingEntryCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$id = $input->getOption('id');
 
 		if (!is_string($id) || $id === '')
 		{
-			$output->writeln('<error>Option --id is required.</error>');
+			$io->error('Option --id is required.');
 
 			return Command::FAILURE;
 		}
@@ -44,13 +47,14 @@ final class DeleteReadingEntryCliCommand extends Command
 		try
 		{
 			$this->handler->handle(new DeleteReadingEntryCommand($id));
-			$output->writeln(sprintf('Reading entry "%s" deleted.', $id));
+
+			$io->success(sprintf('Reading entry "%s" deleted.', $id));
 
 			return Command::SUCCESS;
 		}
 		catch (ReadingEntryNotFoundException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

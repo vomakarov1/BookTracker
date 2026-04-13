@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'user:delete', description: 'Delete a user by ID')]
 final class DeleteUserCliCommand extends Command
@@ -32,11 +33,13 @@ final class DeleteUserCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$id = $input->getOption('id');
 
 		if (!is_string($id) || $id === '')
 		{
-			$output->writeln('<error>Option --id is required.</error>');
+			$io->error('Option --id is required.');
 
 			return Command::FAILURE;
 		}
@@ -44,13 +47,14 @@ final class DeleteUserCliCommand extends Command
 		try
 		{
 			$this->handler->handle(new DeleteUserCommand($id));
-			$output->writeln(sprintf('User "%s" deleted.', $id));
+
+			$io->success(sprintf('User "%s" deleted.', $id));
 
 			return Command::SUCCESS;
 		}
 		catch (UserNotFoundException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

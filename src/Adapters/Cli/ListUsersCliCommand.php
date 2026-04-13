@@ -8,9 +8,9 @@ use BookTracker\Application\Query\User\GetUsersListHandler;
 use BookTracker\Application\Query\User\GetUsersListQuery;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'user:list', description: 'List all users')]
 final class ListUsersCliCommand extends Command
@@ -24,17 +24,18 @@ final class ListUsersCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$users = $this->handler->handle(new GetUsersListQuery());
 
-		$table = new Table($output);
-		$table->setHeaders(['ID', 'Name', 'Email']);
+		$rows = [];
 
 		foreach ($users as $user)
 		{
-			$table->addRow([$user->id, $user->name, $user->email]);
+			$rows[] = [$user->id, $user->name, $user->email];
 		}
 
-		$table->render();
+		$io->table(['ID', 'Name', 'Email'], $rows);
 
 		return Command::SUCCESS;
 	}

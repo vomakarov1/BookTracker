@@ -8,10 +8,10 @@ use BookTracker\Application\Query\ReadingEntry\GetReadingEntriesHandler;
 use BookTracker\Application\Query\ReadingEntry\GetReadingEntriesQuery;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'reading:list', description: 'List reading entries for a user')]
 final class ListReadingEntriesCliCommand extends Command
@@ -32,35 +32,34 @@ final class ListReadingEntriesCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$userId = $input->getOption('user-id');
 
 		if (!is_string($userId) || $userId === '')
 		{
-			$output->writeln('<error>Option --user-id is required.</error>');
+			$io->error('Option --user-id is required.');
 
 			return Command::FAILURE;
 		}
 
 		$entries = $this->handler->handle(new GetReadingEntriesQuery($userId));
 
-		$table = new Table($output);
-		$table->setHeaders(['ID', 'Book ID', 'Status', 'Rating', 'Started', 'Finished']);
+		$rows = [];
 
 		foreach ($entries as $entry)
 		{
-			$table->addRow(
-				[
-					$entry->id,
-					$entry->bookId,
-					$entry->status,
-					$entry->rating !== null ? (string)$entry->rating : '-',
-					$entry->startedAt,
-					$entry->finishedAt ?? '-',
-				],
-			);
+			$rows[] = [
+				$entry->id,
+				$entry->bookId,
+				$entry->status,
+				$entry->rating !== null ? (string)$entry->rating : '-',
+				$entry->startedAt,
+				$entry->finishedAt ?? '-',
+			];
 		}
 
-		$table->render();
+		$io->table(['ID', 'Book ID', 'Status', 'Rating', 'Started', 'Finished'], $rows);
 
 		return Command::SUCCESS;
 	}

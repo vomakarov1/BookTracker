@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'reading:status', description: 'Change the status of a reading entry')]
 final class ChangeReadingStatusCliCommand extends Command
@@ -35,12 +36,14 @@ final class ChangeReadingStatusCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$id = $input->getOption('id');
 		$status = $input->getOption('status');
 
 		if (!is_string($id) || $id === '' || !is_string($status) || $status === '')
 		{
-			$output->writeln('<error>Options --id and --status are required.</error>');
+			$io->error('Options --id and --status are required.');
 
 			return Command::FAILURE;
 		}
@@ -50,13 +53,13 @@ final class ChangeReadingStatusCliCommand extends Command
 			$command = new ChangeReadingStatusCommand(readingEntryId: $id, newStatus: $status);
 			$this->handler->handle($command);
 
-			$output->writeln(sprintf('Status changed to %s', $status));
+			$io->success(sprintf('Status changed to %s', $status));
 
 			return Command::SUCCESS;
 		}
 		catch (ReadingEntryNotFoundException|ValidationException|InvalidStatusTransitionException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'user:create', description: 'Create a new user')]
 final class CreateUserCliCommand extends Command
@@ -36,12 +37,14 @@ final class CreateUserCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$name = $input->getOption('name');
 		$email = $input->getOption('email');
 
 		if (!is_string($name) || !is_string($email))
 		{
-			$output->writeln('<error>Options --name and --email are required.</error>');
+			$io->error('Options --name and --email are required.');
 
 			return Command::FAILURE;
 		}
@@ -53,13 +56,13 @@ final class CreateUserCliCommand extends Command
 			$command = new CreateUserCommand(id: $id, name: $name, email: $email);
 			$this->handler->handle($command);
 
-			$output->writeln(sprintf('User created with ID: %s', $id));
+			$io->success(sprintf('User created with ID: %s', $id));
 
 			return Command::SUCCESS;
 		}
 		catch (ValidationException|DuplicateUserException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}

@@ -15,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'reading:create', description: 'Create a reading entry for a user and book')]
 final class CreateReadingEntryCliCommand extends Command
@@ -37,12 +38,14 @@ final class CreateReadingEntryCliCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$userId = $input->getOption('user-id');
 		$bookId = $input->getOption('book-id');
 
 		if (!is_string($userId) || $userId === '' || !is_string($bookId) || $bookId === '')
 		{
-			$output->writeln('<error>Options --user-id and --book-id are required.</error>');
+			$io->error('Options --user-id and --book-id are required.');
 
 			return Command::FAILURE;
 		}
@@ -54,13 +57,13 @@ final class CreateReadingEntryCliCommand extends Command
 			$command = new CreateReadingEntryCommand(id: $id, userId: $userId, bookId: $bookId);
 			$this->handler->handle($command);
 
-			$output->writeln(sprintf('Reading entry created with ID: %s', $id));
+			$io->success(sprintf('Reading entry created with ID: %s', $id));
 
 			return Command::SUCCESS;
 		}
 		catch (UserNotFoundException|BookNotFoundException|DuplicateReadingEntryException $e)
 		{
-			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+			$io->error($e->getMessage());
 
 			return Command::FAILURE;
 		}
