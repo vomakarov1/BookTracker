@@ -8,6 +8,7 @@ use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Entity\ReadingEntry;
 use BookTracker\Domain\Entity\User;
 use BookTracker\Domain\Enum\ReadingStatus;
+use BookTracker\Domain\Exception\InvalidRatingException;
 use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\ValueObject\ReadingEntryRating;
 use PHPUnit\Framework\TestCase;
@@ -78,7 +79,7 @@ final class ReadingEntryTest extends TestCase
 		$entry = ReadingEntry::create('e1', $this->user, $this->book);
 		$entry->changeStatus(ReadingStatus::READING);
 
-		$this->expectException(InvalidStatusTransitionException::class);
+		$this->expectException(InvalidRatingException::class);
 		$entry->rate(new ReadingEntryRating(5));
 	}
 }

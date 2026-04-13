@@ -11,7 +11,6 @@ use BookTracker\Domain\Entity\ReadingEntry;
 use BookTracker\Domain\Entity\User;
 use BookTracker\Domain\Enum\ReadingStatus;
 use BookTracker\Domain\Exception\InvalidRatingException;
-use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use PHPUnit\Framework\TestCase;
@@ -44,12 +43,12 @@ final class RateReadingEntryHandlerTest extends TestCase
 		self::assertSame(8, $saved->getRating()->getValue());
 	}
 
-	public function testThrowsInvalidStatusTransitionExceptionWhenRatingReadingEntry(): void
+	public function testThrowsInvalidRatingExceptionWhenRatingReadingEntry(): void
 	{
 		$entry = ReadingEntry::create('e1', $this->user, $this->book, ReadingStatus::READING);
 		$this->repository->save($entry);
 
-		$this->expectException(InvalidStatusTransitionException::class);
+		$this->expectException(InvalidRatingException::class);
 		$this->handler->handle(new RateReadingEntryCommand('e1', 8));
 	}
 

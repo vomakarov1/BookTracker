@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Domain\Entity;
 
 use BookTracker\Domain\Enum\ReadingStatus;
+use BookTracker\Domain\Exception\InvalidRatingException;
 use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\ValueObject\ReadingEntryRating;
 use DateTimeImmutable;
@@ -72,7 +73,7 @@ final class ReadingEntry
 					'Cannot transition from %s to %s.',
 					$this->status->value,
 					$new->value,
-				)
+				),
 			);
 		}
 
@@ -88,11 +89,11 @@ final class ReadingEntry
 	{
 		if ($this->status !== ReadingStatus::FINISHED)
 		{
-			throw new InvalidStatusTransitionException(
+			throw new InvalidRatingException(
 				sprintf(
 					'Cannot rate a reading entry with status %s. Only FINISHED entries can be rated.',
 					$this->status->value,
-				)
+				),
 			);
 		}
 
