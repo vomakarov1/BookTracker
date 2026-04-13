@@ -8,6 +8,7 @@ use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\ValueObject\BookVector;
 use BookTracker\Infrastructure\Vectorization\BookFeatureVectorizer;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class BookFeatureVectorizerTest extends TestCase
 {
@@ -20,7 +21,7 @@ final class BookFeatureVectorizerTest extends TestCase
 
 	private function makeBook(string $category, int $complexity = 5, string $author = 'Author'): Book
 	{
-		return new Book('id', 'Title', $author, $category, $complexity);
+		return new Book('id', 'Title', $author, $category, new BookComplexity($complexity));
 	}
 
 	public function testFictionCategoryFirstElementIsOne(): void

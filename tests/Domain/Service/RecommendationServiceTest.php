@@ -13,6 +13,7 @@ use BookTracker\Domain\ValueObject\ReadingEntryRating;
 use BookTracker\Tests\Domain\Service\Stub\StubDistanceMetric;
 use BookTracker\Tests\Domain\Service\Stub\StubVectorizer;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class RecommendationServiceTest extends TestCase
 {
@@ -25,7 +26,7 @@ final class RecommendationServiceTest extends TestCase
 
 	private function makeBook(string $id, string $title, string $author = 'Author'): Book
 	{
-		return new Book($id, $title, $author, 'Fiction', 5);
+		return new Book($id, $title, $author, 'Fiction', new BookComplexity(5));
 	}
 
 	private function makeFinishedEntry(string $id, Book $book, int $rating): ReadingEntry
@@ -80,7 +81,7 @@ final class RecommendationServiceTest extends TestCase
 					'b2' => [1.0, 0.0],
 					'b3' => [1.0, 0.0],
 					'b4' => [1.0, 0.0],
-				]
+				],
 			),
 			new StubDistanceMetric(),
 		);
@@ -110,7 +111,7 @@ final class RecommendationServiceTest extends TestCase
 				[
 					'b3' => [1.0, 0.0],
 					'b4' => [1.1, 0.0],
-				]
+				],
 			),
 			new StubDistanceMetric(),
 		);
@@ -135,7 +136,7 @@ final class RecommendationServiceTest extends TestCase
 					'b1' => [1.0, 0.0],
 					'b2' => [1.1, 0.0],  // distance ≈ 0.1 from b1
 					'b3' => [5.0, 5.0],  // distance ≈ 7.07 from b1
-				]
+				],
 			),
 			new StubDistanceMetric(),
 		);
@@ -205,7 +206,7 @@ final class RecommendationServiceTest extends TestCase
 				[
 					'b1' => [1.0, 0.0],
 					'b2' => [2.0, 0.0],
-				]
+				],
 			),
 			new StubDistanceMetric(),
 		);
@@ -226,7 +227,7 @@ final class RecommendationServiceTest extends TestCase
 				[
 					'b1' => [1.0, 0.0],
 					'b2' => [1.1, 0.0],
-				]
+				],
 			),
 			new StubDistanceMetric(),
 		);
@@ -248,7 +249,7 @@ final class RecommendationServiceTest extends TestCase
 				[
 					'b1' => [1.0, 0.0],
 					'b2' => [1.1, 0.0],
-				]
+				],
 			),
 			new StubDistanceMetric(),
 		);

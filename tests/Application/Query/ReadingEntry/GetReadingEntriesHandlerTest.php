@@ -11,6 +11,7 @@ use BookTracker\Domain\Entity\ReadingEntry;
 use BookTracker\Domain\Entity\User;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class GetReadingEntriesHandlerTest extends TestCase
 {
@@ -27,8 +28,8 @@ final class GetReadingEntriesHandlerTest extends TestCase
 
 	public function testReturnsTwoEntriesForUserWithTwoReadings(): void
 	{
-		$book1 = new Book('b1', 'Book One', 'Author A', 'Fiction', 3);
-		$book2 = new Book('b2', 'Book Two', 'Author B', 'Tech', 7);
+		$book1 = new Book('b1', 'Book One', 'Author A', 'Fiction', new BookComplexity(3));
+		$book2 = new Book('b2', 'Book Two', 'Author B', 'Tech', new BookComplexity(7));
 
 		$entry1 = ReadingEntry::create('e1', $this->user, $book1);
 		$entry2 = ReadingEntry::create('e2', $this->user, $book2);
@@ -53,7 +54,7 @@ final class GetReadingEntriesHandlerTest extends TestCase
 	public function testDoesNotReturnEntriesOfOtherUsers(): void
 	{
 		$otherUser = new User('u2', 'Bob', 'bob@example.com');
-		$book = new Book('b1', 'Book One', 'Author A', 'Fiction', 3);
+		$book = new Book('b1', 'Book One', 'Author A', 'Fiction', new BookComplexity(3));
 
 		$entry = ReadingEntry::create('e1', $otherUser, $book);
 		$this->repository->save($entry);

@@ -11,6 +11,7 @@ use BookTracker\Domain\Enum\ReadingStatus;
 use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\ValueObject\ReadingEntryRating;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class ReadingEntryTest extends TestCase
 {
@@ -20,7 +21,7 @@ final class ReadingEntryTest extends TestCase
 	protected function setUp(): void
 	{
 		$this->user = new User('u1', 'John Doe', 'john@example.com');
-		$this->book = new Book('b1', 'Clean Code', 'Robert C. Martin', 'Programming', 7);
+		$this->book = new Book('b1', 'Clean Code', 'Robert C. Martin', 'Programming', new BookComplexity(7));
 	}
 
 	public function testCreateReturnsEntryWithCorrectData(): void

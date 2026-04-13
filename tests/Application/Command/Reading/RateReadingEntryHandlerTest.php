@@ -15,6 +15,7 @@ use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class RateReadingEntryHandlerTest extends TestCase
 {
@@ -28,7 +29,7 @@ final class RateReadingEntryHandlerTest extends TestCase
 		$this->repository = new InMemoryReadingEntryRepository();
 		$this->handler = new RateReadingEntryHandler($this->repository);
 		$this->user = new User('u1', 'Alice', 'alice@example.com');
-		$this->book = new Book('b1', 'Clean Code', 'Robert Martin', 'Tech', 7);
+		$this->book = new Book('b1', 'Clean Code', 'Robert Martin', 'Tech', new BookComplexity(7));
 	}
 
 	public function testRatesFinishedEntryAndSavesRating(): void

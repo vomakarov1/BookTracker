@@ -15,6 +15,7 @@ use BookTracker\Tests\Stub\InMemoryBookRepository;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use BookTracker\Tests\Stub\InMemoryUserRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class CreateReadingEntryHandlerTest extends TestCase
 {
@@ -35,7 +36,7 @@ final class CreateReadingEntryHandlerTest extends TestCase
 		);
 
 		$this->userRepository->save(new User('u1', 'Alice', 'alice@example.com'));
-		$this->bookRepository->save(new Book('b1', 'Clean Code', 'Robert Martin', 'Tech', 7));
+		$this->bookRepository->save(new Book('b1', 'Clean Code', 'Robert Martin', 'Tech', new BookComplexity(7)));
 	}
 
 	public function testCreatesReadingEntryWithCorrectUserAndBook(): void

@@ -7,12 +7,13 @@ namespace BookTracker\Tests\Domain\Entity;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\InvalidBookException;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class BookTest extends TestCase
 {
 	public function testCreateWithValidData(): void
 	{
-		$book = new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', 7);
+		$book = new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', new BookComplexity(7));
 
 		$this->assertSame('1', $book->getId());
 		$this->assertSame('Clean Code', $book->getTitle());
@@ -24,24 +25,24 @@ final class BookTest extends TestCase
 	public function testCreateWithEmptyTitleThrows(): void
 	{
 		$this->expectException(InvalidBookException::class);
-		new Book('1', '', 'Robert C. Martin', 'Programming', 7);
+		new Book('1', '', 'Robert C. Martin', 'Programming', new BookComplexity(7));
 	}
 
 	public function testCreateWithEmptyAuthorThrows(): void
 	{
 		$this->expectException(InvalidBookException::class);
-		new Book('1', 'Clean Code', '', 'Programming', 7);
+		new Book('1', 'Clean Code', '', 'Programming', new BookComplexity(7));
 	}
 
 	public function testCreateWithComplexityZeroThrows(): void
 	{
 		$this->expectException(InvalidBookException::class);
-		new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', 0);
+		new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', new BookComplexity(0));
 	}
 
 	public function testCreateWithComplexityElevenThrows(): void
 	{
 		$this->expectException(InvalidBookException::class);
-		new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', 11);
+		new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', new BookComplexity(11));
 	}
 }

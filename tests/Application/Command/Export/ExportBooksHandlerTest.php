@@ -15,6 +15,7 @@ use BookTracker\Tests\Stub\InMemoryBookRepository;
 use BookTracker\Tests\Stub\InMemoryFileWriter;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class ExportBooksHandlerTest extends TestCase
 {
@@ -26,9 +27,17 @@ final class ExportBooksHandlerTest extends TestCase
 		$this->repository = new InMemoryBookRepository();
 		$this->fileWriter = new InMemoryFileWriter();
 
-		$this->repository->save(new Book('1', 'Clean Code', 'Robert Martin', 'Programming', 5));
-		$this->repository->save(new Book('2', 'The Pragmatic Programmer', 'David Thomas', 'Programming', 4));
-		$this->repository->save(new Book('3', 'Domain-Driven Design', 'Eric Evans', 'Architecture', 8));
+		$this->repository->save(
+			new Book('1', 'Clean Code', 'Robert Martin', 'Programming', new BookComplexity(5))
+		);
+
+		$this->repository->save(
+			new Book('2', 'The Pragmatic Programmer', 'David Thomas', 'Programming', new BookComplexity(4)),
+		);
+
+		$this->repository->save(
+			new Book('3', 'Domain-Driven Design', 'Eric Evans', 'Architecture', new BookComplexity(8)),
+		);
 	}
 
 	private function makeHandler(ExportFormatterInterface $formatter): ExportBooksHandler

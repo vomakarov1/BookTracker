@@ -7,6 +7,7 @@ namespace BookTracker\Application\Command\Book;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\DuplicateBookException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class CreateBookHandler
 {
@@ -30,7 +31,7 @@ final class CreateBookHandler
 			title: $command->title,
 			author: $command->author,
 			category: $command->category,
-			complexity: $command->complexity,
+			complexity: new BookComplexity($command->complexity),
 		);
 
 		$this->bookRepository->save($book);

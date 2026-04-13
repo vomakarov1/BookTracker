@@ -42,13 +42,6 @@ final readonly class CreateBookCommand
 			throw new ValidationException('Book category must not be empty.');
 		}
 
-		if ($complexity < 1 || $complexity > 10)
-		{
-			throw new ValidationException(
-				sprintf('Book complexity must be between 1 and 10, %d given.', $complexity),
-			);
-		}
-
 		$this->id = $id;
 		$this->title = $title;
 		$this->author = $author;

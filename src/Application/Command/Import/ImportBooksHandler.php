@@ -11,6 +11,7 @@ use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Application\Port\ImportParserInterface;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
+use BookTracker\Domain\ValueObject\BookComplexity;
 use RuntimeException;
 
 final class ImportBooksHandler
@@ -61,7 +62,7 @@ final class ImportBooksHandler
 				title: $dto->title,
 				author: $dto->author,
 				category: $dto->category,
-				complexity: $dto->complexity,
+				complexity: new BookComplexity($dto->complexity),
 			);
 
 			$this->bookRepository->save($book);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Domain\Entity;
 
 use BookTracker\Domain\Exception\InvalidBookException;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class Book
 {
@@ -13,7 +14,7 @@ final class Book
 		private readonly string $title,
 		private readonly string $author,
 		private readonly string $category,
-		private readonly int $complexity,
+		private readonly BookComplexity $complexity,
 	)
 	{
 		if (trim($title) === '')
@@ -24,13 +25,6 @@ final class Book
 		if (trim($author) === '')
 		{
 			throw new InvalidBookException('Book author must not be empty.');
-		}
-
-		if ($complexity < 1 || $complexity > 10)
-		{
-			throw new InvalidBookException(
-				sprintf('Book complexity must be between 1 and 10, %d given.', $complexity),
-			);
 		}
 	}
 
@@ -56,6 +50,6 @@ final class Book
 
 	public function getComplexity(): int
 	{
-		return $this->complexity;
+		return $this->complexity->getValue();
 	}
 }

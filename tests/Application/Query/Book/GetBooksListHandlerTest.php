@@ -9,6 +9,7 @@ use BookTracker\Application\Query\Book\GetBooksListQuery;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class GetBooksListHandlerTest extends TestCase
 {
@@ -30,9 +31,9 @@ final class GetBooksListHandlerTest extends TestCase
 
 	public function testReturnsAllBooksWhenNoFilters(): void
 	{
-		$this->repository->save(new Book('1', 'Book One', 'Author A', 'Fiction', 3));
-		$this->repository->save(new Book('2', 'Book Two', 'Author B', 'Tech', 7));
-		$this->repository->save(new Book('3', 'Book Three', 'Author C', 'History', 5));
+		$this->repository->save(new Book('1', 'Book One', 'Author A', 'Fiction', new BookComplexity(3)));
+		$this->repository->save(new Book('2', 'Book Two', 'Author B', 'Tech', new BookComplexity(7)));
+		$this->repository->save(new Book('3', 'Book Three', 'Author C', 'History', new BookComplexity(5)));
 
 		$result = $this->handler->handle(new GetBooksListQuery());
 
@@ -41,9 +42,9 @@ final class GetBooksListHandlerTest extends TestCase
 
 	public function testFiltersByCategory(): void
 	{
-		$this->repository->save(new Book('1', 'Book One', 'Author A', 'Fiction', 3));
-		$this->repository->save(new Book('2', 'Book Two', 'Author B', 'Tech', 7));
-		$this->repository->save(new Book('3', 'Book Three', 'Author C', 'Fiction', 5));
+		$this->repository->save(new Book('1', 'Book One', 'Author A', 'Fiction', new BookComplexity(3)));
+		$this->repository->save(new Book('2', 'Book Two', 'Author B', 'Tech', new BookComplexity(7)));
+		$this->repository->save(new Book('3', 'Book Three', 'Author C', 'Fiction', new BookComplexity(5)));
 
 		$result = $this->handler->handle(new GetBooksListQuery(category: 'Fiction'));
 
@@ -56,9 +57,9 @@ final class GetBooksListHandlerTest extends TestCase
 
 	public function testFiltersByAuthor(): void
 	{
-		$this->repository->save(new Book('1', 'Book One', 'Robert Martin', 'Tech', 7));
-		$this->repository->save(new Book('2', 'Book Two', 'Martin Fowler', 'Tech', 6));
-		$this->repository->save(new Book('3', 'Book Three', 'Robert Martin', 'Tech', 8));
+		$this->repository->save(new Book('1', 'Book One', 'Robert Martin', 'Tech', new BookComplexity(7)));
+		$this->repository->save(new Book('2', 'Book Two', 'Martin Fowler', 'Tech', new BookComplexity(6)));
+		$this->repository->save(new Book('3', 'Book Three', 'Robert Martin', 'Tech', new BookComplexity(8)));
 
 		$result = $this->handler->handle(new GetBooksListQuery(author: 'Robert Martin'));
 

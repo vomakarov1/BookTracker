@@ -7,6 +7,7 @@ namespace BookTracker\Infrastructure\Repository;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
+use BookTracker\Domain\ValueObject\BookComplexity;
 use JsonException;
 use RuntimeException;
 
@@ -74,7 +75,7 @@ final class JsonBookRepository implements BookRepositoryInterface
 			title: (string)$row['title'],
 			author: (string)$row['author'],
 			category: (string)$row['category'],
-			complexity: (int)$row['complexity'],
+			complexity: new BookComplexity((int)$row['complexity']),
 		);
 	}
 

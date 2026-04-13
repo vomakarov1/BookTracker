@@ -10,6 +10,7 @@ use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class DeleteBookHandlerTest extends TestCase
 {
@@ -24,7 +25,7 @@ final class DeleteBookHandlerTest extends TestCase
 
 	public function testDeletesExistingBook(): void
 	{
-		$book = new Book('b1', 'Clean Code', 'Robert Martin', 'Tech', 7);
+		$book = new Book('b1', 'Clean Code', 'Robert Martin', 'Tech', new BookComplexity(7));
 		$this->repository->save($book);
 
 		$this->handler->handle(new DeleteBookCommand('b1'));

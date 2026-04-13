@@ -10,6 +10,7 @@ use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class GetBookHandlerTest extends TestCase
 {
@@ -24,7 +25,7 @@ final class GetBookHandlerTest extends TestCase
 
 	public function testReturnsBookDTOForExistingBook(): void
 	{
-		$book = new Book('1', 'Clean Code', 'Robert Martin', 'Tech', 7);
+		$book = new Book('1', 'Clean Code', 'Robert Martin', 'Tech', new BookComplexity(7));
 		$this->repository->save($book);
 
 		$dto = $this->handler->handle(new GetBookQuery('1'));

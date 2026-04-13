@@ -17,6 +17,7 @@ use BookTracker\Tests\Domain\Service\Stub\StubVectorizer;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use PHPUnit\Framework\TestCase;
+use BookTracker\Domain\ValueObject\BookComplexity;
 
 final class GetRecommendationsHandlerTest extends TestCase
 {
@@ -57,11 +58,11 @@ final class GetRecommendationsHandlerTest extends TestCase
 
 	public function testReturnsRecommendationsForUserWhoReadTwoBooks(): void
 	{
-		$read1 = new Book('b1', 'Read Book One', 'Author A', 'Tech', 7);
-		$read2 = new Book('b2', 'Read Book Two', 'Author B', 'Tech', 6);
-		$candidate1 = new Book('b3', 'Candidate One', 'Author C', 'Tech', 5);
-		$candidate2 = new Book('b4', 'Candidate Two', 'Author D', 'Tech', 4);
-		$candidate3 = new Book('b5', 'Candidate Three', 'Author E', 'Tech', 8);
+		$read1 = new Book('b1', 'Read Book One', 'Author A', 'Tech', new BookComplexity(7));
+		$read2 = new Book('b2', 'Read Book Two', 'Author B', 'Tech', new BookComplexity(6));
+		$candidate1 = new Book('b3', 'Candidate One', 'Author C', 'Tech', new BookComplexity(5));
+		$candidate2 = new Book('b4', 'Candidate Two', 'Author D', 'Tech', new BookComplexity(4));
+		$candidate3 = new Book('b5', 'Candidate Three', 'Author E', 'Tech', new BookComplexity(8));
 
 		$this->bookRepository->save($read1);
 		$this->bookRepository->save($read2);
@@ -98,7 +99,7 @@ final class GetRecommendationsHandlerTest extends TestCase
 
 	public function testReturnsEmptyArrayForUserWithNoReadingHistory(): void
 	{
-		$candidate = new Book('b1', 'Some Book', 'Author', 'Fiction', 5);
+		$candidate = new Book('b1', 'Some Book', 'Author', 'Fiction', new BookComplexity(5));
 		$this->bookRepository->save($candidate);
 
 		$handler = $this->makeHandler(['b1' => [1.0, 0.0]]);
