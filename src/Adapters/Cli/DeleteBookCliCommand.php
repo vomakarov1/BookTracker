@@ -9,8 +9,8 @@ use BookTracker\Application\Command\Book\DeleteBookHandler;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -27,7 +27,7 @@ final class DeleteBookCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Book ID')
+			->addArgument('id', InputArgument::REQUIRED, 'Book ID')
 		;
 	}
 
@@ -35,14 +35,7 @@ final class DeleteBookCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$id = $input->getOption('id');
-
-		if (!is_string($id) || $id === '')
-		{
-			$io->error('Option --id is required.');
-
-			return Command::FAILURE;
-		}
+		$id = (string)$input->getArgument('id');
 
 		try
 		{

@@ -11,8 +11,8 @@ use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -29,8 +29,8 @@ final class ChangeReadingStatusCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Reading entry ID')
-			->addOption('status', null, InputOption::VALUE_REQUIRED, 'New status (planned|reading|finished|dropped)')
+			->addArgument('id', InputArgument::REQUIRED, 'Reading entry ID')
+			->addArgument('status', InputArgument::REQUIRED, 'New status (planned|reading|finished|dropped)')
 		;
 	}
 
@@ -38,15 +38,8 @@ final class ChangeReadingStatusCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$id = $input->getOption('id');
-		$status = $input->getOption('status');
-
-		if (!is_string($id) || $id === '' || !is_string($status) || $status === '')
-		{
-			$io->error('Options --id and --status are required.');
-
-			return Command::FAILURE;
-		}
+		$id = (string)$input->getArgument('id');
+		$status = (string)$input->getArgument('status');
 
 		try
 		{

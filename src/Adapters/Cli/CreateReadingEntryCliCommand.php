@@ -12,8 +12,8 @@ use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Exception\UserNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -31,8 +31,8 @@ final class CreateReadingEntryCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID')
-			->addOption('book-id', null, InputOption::VALUE_REQUIRED, 'Book ID')
+			->addArgument('user-id', InputArgument::REQUIRED, 'User ID')
+			->addArgument('book-id', InputArgument::REQUIRED, 'Book ID')
 		;
 	}
 
@@ -40,15 +40,8 @@ final class CreateReadingEntryCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$userId = $input->getOption('user-id');
-		$bookId = $input->getOption('book-id');
-
-		if (!is_string($userId) || $userId === '' || !is_string($bookId) || $bookId === '')
-		{
-			$io->error('Options --user-id and --book-id are required.');
-
-			return Command::FAILURE;
-		}
+		$userId = (string)$input->getArgument('user-id');
+		$bookId = (string)$input->getArgument('book-id');
 
 		try
 		{

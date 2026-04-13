@@ -9,6 +9,7 @@ use BookTracker\Application\Command\Export\ExportBooksHandler;
 use BookTracker\Application\Exception\ExportFailedException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,7 +28,7 @@ final class ExportBooksCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('file', null, InputOption::VALUE_REQUIRED, 'Path to the output file')
+			->addArgument('file', InputArgument::REQUIRED, 'Path to the output file')
 			->addOption('format', null, InputOption::VALUE_OPTIONAL, 'File format (json|csv)', 'json')
 		;
 	}
@@ -36,14 +37,7 @@ final class ExportBooksCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$file = $input->getOption('file');
-
-		if (!is_string($file) || $file === '')
-		{
-			$io->error('Option --file is required.');
-
-			return Command::FAILURE;
-		}
+		$file = (string)$input->getArgument('file');
 
 		$formatRaw = $input->getOption('format');
 		$format = is_string($formatRaw) ? $formatRaw : 'json';

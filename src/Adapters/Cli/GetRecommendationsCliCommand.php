@@ -8,6 +8,7 @@ use BookTracker\Application\Query\Recommendation\GetRecommendationsHandler;
 use BookTracker\Application\Query\Recommendation\GetRecommendationsQuery;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ final class GetRecommendationsCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID')
+			->addArgument('user-id', InputArgument::REQUIRED, 'User ID')
 			->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Number of recommendations', '5')
 		;
 	}
@@ -35,14 +36,7 @@ final class GetRecommendationsCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$userId = $input->getOption('user-id');
-
-		if (!is_string($userId) || $userId === '')
-		{
-			$io->error('Option --user-id is required.');
-
-			return Command::FAILURE;
-		}
+		$userId = (string)$input->getArgument('user-id');
 
 		$limitRaw = $input->getOption('limit');
 		$limit = is_numeric($limitRaw) ? (int)$limitRaw : 5;

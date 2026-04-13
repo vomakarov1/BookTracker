@@ -10,8 +10,8 @@ use BookTracker\Domain\Exception\InvalidStatusTransitionException;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -28,8 +28,8 @@ final class RateReadingEntryCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Reading entry ID')
-			->addOption('rating', null, InputOption::VALUE_REQUIRED, 'Rating (1-10)')
+			->addArgument('id', InputArgument::REQUIRED, 'Reading entry ID')
+			->addArgument('rating', InputArgument::REQUIRED, 'Rating (1-10)')
 		;
 	}
 
@@ -37,15 +37,8 @@ final class RateReadingEntryCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$id = $input->getOption('id');
-		$rating = $input->getOption('rating');
-
-		if (!is_string($id) || $id === '' || $rating === null)
-		{
-			$io->error('Options --id and --rating are required.');
-
-			return Command::FAILURE;
-		}
+		$id = (string)$input->getArgument('id');
+		$rating = $input->getArgument('rating');
 
 		try
 		{

@@ -8,8 +8,8 @@ use BookTracker\Application\Query\ReadingEntry\GetReadingEntriesHandler;
 use BookTracker\Application\Query\ReadingEntry\GetReadingEntriesQuery;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -26,7 +26,7 @@ final class ListReadingEntriesCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('user-id', null, InputOption::VALUE_REQUIRED, 'User ID')
+			->addArgument('user-id', InputArgument::REQUIRED, 'User ID')
 		;
 	}
 
@@ -34,14 +34,7 @@ final class ListReadingEntriesCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$userId = $input->getOption('user-id');
-
-		if (!is_string($userId) || $userId === '')
-		{
-			$io->error('Option --user-id is required.');
-
-			return Command::FAILURE;
-		}
+		$userId = (string)$input->getArgument('user-id');
 
 		$entries = $this->handler->handle(new GetReadingEntriesQuery($userId));
 

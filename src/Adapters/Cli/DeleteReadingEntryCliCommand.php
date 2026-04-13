@@ -9,8 +9,8 @@ use BookTracker\Application\Command\ReadingEntry\DeleteReadingEntryHandler;
 use BookTracker\Domain\Exception\ReadingEntryNotFoundException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -27,7 +27,7 @@ final class DeleteReadingEntryCliCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->addOption('id', null, InputOption::VALUE_REQUIRED, 'Reading entry ID')
+			->addArgument('id', InputArgument::REQUIRED, 'Reading entry ID')
 		;
 	}
 
@@ -35,14 +35,7 @@ final class DeleteReadingEntryCliCommand extends Command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$id = $input->getOption('id');
-
-		if (!is_string($id) || $id === '')
-		{
-			$io->error('Option --id is required.');
-
-			return Command::FAILURE;
-		}
+		$id = (string)$input->getArgument('id');
 
 		try
 		{
