@@ -6,20 +6,16 @@ namespace BookTracker\Domain\ValueObject;
 
 use BookTracker\Domain\Exception\InvalidRatingException;
 
-final class ReadingEntryRating
+final readonly class ReadingEntryRating
 {
-	private int $value;
-
-	public function __construct(int $value)
+	public function __construct(private int $value)
 	{
 		if ($value < 1 || $value > 10)
 		{
 			throw new InvalidRatingException(
-				sprintf('Rating must be between 1 and 10, %d given.', $value)
+				sprintf('Rating must be between 1 and 10, %d given.', $value),
 			);
 		}
-
-		$this->value = $value;
 	}
 
 	public function getValue(): int
