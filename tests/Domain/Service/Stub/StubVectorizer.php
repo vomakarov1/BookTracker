@@ -6,6 +6,7 @@ namespace BookTracker\Tests\Domain\Service\Stub;
 
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Service\VectorizerInterface;
+use BookTracker\Domain\ValueObject\BookVector;
 
 final class StubVectorizer implements VectorizerInterface
 {
@@ -14,9 +15,8 @@ final class StubVectorizer implements VectorizerInterface
 	{
 	}
 
-	/** @return array<float> */
-	public function vectorize(Book $book): array
+	public function vectorize(Book $book): BookVector
 	{
-		return $this->vectors[$book->getId()] ?? [0.0, 0.0];
+		return new BookVector($this->vectors[$book->getId()] ?? [0.0, 0.0]);
 	}
 }

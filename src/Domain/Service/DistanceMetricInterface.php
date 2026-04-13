@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace BookTracker\Domain\Service;
 
+use BookTracker\Domain\ValueObject\BookVector;
+
 interface DistanceMetricInterface
 {
-	/**
-	 * @param array<float> $a
-	 * @param array<float> $b
-	 */
-	public function distance(array $a, array $b): float;
+	public function distance(BookVector $a, BookVector $b): float;
 }

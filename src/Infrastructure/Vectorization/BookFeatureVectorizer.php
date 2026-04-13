@@ -6,6 +6,7 @@ namespace BookTracker\Infrastructure\Vectorization;
 
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Service\VectorizerInterface;
+use BookTracker\Domain\ValueObject\BookVector;
 
 final class BookFeatureVectorizer implements VectorizerInterface
 {
@@ -22,10 +23,7 @@ final class BookFeatureVectorizer implements VectorizerInterface
 		'romance',
 	];
 
-	/**
-	 * @return array<float>
-	 */
-	public function vectorize(Book $book): array
+	public function vectorize(Book $book): BookVector
 	{
 		$vector = [];
 
@@ -39,6 +37,6 @@ final class BookFeatureVectorizer implements VectorizerInterface
 
 		$vector[] = (float)(crc32($book->getAuthor()) & 0xFFFFFFFF) / (float)0xFFFFFFFF;
 
-		return $vector;
+		return new BookVector($vector);
 	}
 }

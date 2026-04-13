@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Tests\Infrastructure\Vectorization;
 
 use BookTracker\Domain\Entity\Book;
+use BookTracker\Domain\ValueObject\BookVector;
 use BookTracker\Infrastructure\Vectorization\BookFeatureVectorizer;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +25,7 @@ final class BookFeatureVectorizerTest extends TestCase
 
 	public function testFictionCategoryFirstElementIsOne(): void
 	{
-		$vector = $this->vectorizer->vectorize($this->makeBook('fiction'));
+		$vector = $this->vectorizer->vectorize($this->makeBook('fiction'))->toArray();
 
 		$this->assertSame(1.0, $vector[0]);
 
@@ -36,7 +37,7 @@ final class BookFeatureVectorizerTest extends TestCase
 
 	public function testTechCategorySeventhElementIsOne(): void
 	{
-		$vector = $this->vectorizer->vectorize($this->makeBook('tech'));
+		$vector = $this->vectorizer->vectorize($this->makeBook('tech'))->toArray();
 
 		$this->assertSame(1.0, $vector[6]);
 
@@ -48,7 +49,7 @@ final class BookFeatureVectorizerTest extends TestCase
 
 	public function testUnknownCategoryAllCategoryElementsAreZero(): void
 	{
-		$vector = $this->vectorizer->vectorize($this->makeBook('unknown-category'));
+		$vector = $this->vectorizer->vectorize($this->makeBook('unknown-category'))->toArray();
 
 		for ($i = 0; $i <= 9; $i++)
 		{
@@ -58,7 +59,7 @@ final class BookFeatureVectorizerTest extends TestCase
 
 	public function testComplexityFiveNormalizesToHalf(): void
 	{
-		$vector = $this->vectorizer->vectorize($this->makeBook('fiction', 5));
+		$vector = $this->vectorizer->vectorize($this->makeBook('fiction', 5))->toArray();
 
 		$this->assertEqualsWithDelta(0.5, $vector[10], 1e-9);
 	}
@@ -66,16 +67,16 @@ final class BookFeatureVectorizerTest extends TestCase
 	public function testSameAuthorProducesSameAuthorElement(): void
 	{
 		$author = 'Fyodor Dostoevsky';
-		$v1 = $this->vectorizer->vectorize($this->makeBook('fiction', 5, $author));
-		$v2 = $this->vectorizer->vectorize($this->makeBook('tech', 3, $author));
+		$v1 = $this->vectorizer->vectorize($this->makeBook('fiction', 5, $author))->toArray();
+		$v2 = $this->vectorizer->vectorize($this->makeBook('tech', 3, $author))->toArray();
 
 		$this->assertSame($v1[11], $v2[11]);
 	}
 
 	public function testDifferentAuthorsProduceDifferentAuthorElements(): void
 	{
-		$v1 = $this->vectorizer->vectorize($this->makeBook('fiction', 5, 'Leo Tolstoy'));
-		$v2 = $this->vectorizer->vectorize($this->makeBook('fiction', 5, 'Fyodor Dostoevsky'));
+		$v1 = $this->vectorizer->vectorize($this->makeBook('fiction', 5, 'Leo Tolstoy'))->toArray();
+		$v2 = $this->vectorizer->vectorize($this->makeBook('fiction', 5, 'Fyodor Dostoevsky'))->toArray();
 
 		$this->assertNotSame($v1[11], $v2[11]);
 	}
@@ -84,8 +85,9 @@ final class BookFeatureVectorizerTest extends TestCase
 	{
 		foreach (['fiction', 'tech', 'unknown', 'romance'] as $category)
 		{
-			$vector = $this->vectorizer->vectorize($this->makeBook($category));
-			$this->assertCount(12, $vector, "Vector must have 12 elements for category '$category'");
+			$bookVector = $this->vectorizer->vectorize($this->makeBook($category));
+			$this->assertInstanceOf(BookVector::class, $bookVector);
+			$this->assertCount(12, $bookVector->toArray(), "Vector must have 12 elements for category '$category'");
 		}
 	}
 }

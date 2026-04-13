@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BookTracker\Infrastructure\Vectorization;
+namespace BookTracker\Domain\ValueObject;
 
 final readonly class BookVector
 {
@@ -21,5 +21,10 @@ final readonly class BookVector
 	public function toArray(): array
 	{
 		return $this->values;
+	}
+
+	public function count(): int
+	{
+		return count($this->values);
 	}
 }

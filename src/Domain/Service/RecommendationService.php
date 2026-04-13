@@ -6,6 +6,7 @@ namespace BookTracker\Domain\Service;
 
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Entity\ReadingEntry;
+use BookTracker\Domain\ValueObject\BookVector;
 
 final class RecommendationService
 {
@@ -117,7 +118,7 @@ final class RecommendationService
 			return [];
 		}
 
-		/** @var array<array{book: Book, vector: array<float>}> $referenceData */
+		/** @var array<array{book: Book, vector: BookVector}> $referenceData */
 		$referenceData = [];
 		foreach ($referenceBooks as $book)
 		{

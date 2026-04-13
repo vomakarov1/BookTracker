@@ -33,7 +33,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - `ReadingEntry`: конструктор **private**, создание только через `ReadingEntry::create(string $id, User $user, Book $book, ReadingStatus $status = ReadingStatus::PLANNED)`
 - Репозитории — только интерфейсы, реализации в Infrastructure
 - `RecommendationService` содержит бизнес-правила фильтрации ("не рекомендовать автора после 3 низких оценок", "рекомендовать следующую в серии"), но НЕ обращается к репозиториям напрямую — получает данные через параметры
-- Value Objects: `ReadingEntryRating` (валидация диапазона)
+- Value Objects: `ReadingEntryRating` (валидация диапазона), `BookVector` (вектор числовых признаков книги для вычисления сходства; возвращается из `VectorizerInterface::vectorize()`, принимается в `DistanceMetricInterface::distance()`)
 
 #### Глоссарий сущностей
 - **Book** — книга в каталоге: title, author, category, complexity. Агрегат. Инварианты: title и author не пустые.
@@ -52,7 +52,6 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Репозитории: хранение в JSON-файлах (`storage/books.json`, `storage/users.json`, `storage/reading_entries.json`). При каждом вызове загружают файл, при сохранении — записывают обратно. При необходимости заменяются на Doctrine DBAL/ORM с маппингом в Infrastructure, НЕ в Domain-сущностях
 - `UuidV4Generator` implements `IdGeneratorInterface` — генерирует UUID v4 через `random_bytes()`
 - `BookFeatureVectorizer` implements `VectorizerInterface` — возвращает `BookVector`
-- `BookVector` — инфраструктурный объект (массив числовых признаков книги для вычисления расстояния). Живёт в Infrastructure/Vectorization, НЕ в Domain
 - `CosineDistance` implements `DistanceMetricInterface`
 - `LocalFileReader` implements `FileReaderInterface`, `LocalFileWriter` implements `FileWriterInterface` — файловый I/O изолирован в Infrastructure
 - Импорт/экспорт: можно использовать `symfony/serializer` в реализациях CsvParser, JsonFormatter и т.д.
