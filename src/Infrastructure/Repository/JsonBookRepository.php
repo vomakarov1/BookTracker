@@ -105,6 +105,29 @@ final class JsonBookRepository implements BookRepositoryInterface
 		throw new BookNotFoundException(sprintf('Book "%s" not found.', $id));
 	}
 
+	/** @return array<string, Book> */
+	public function getByIds(array $ids): array
+	{
+		if ($ids === [])
+		{
+			return [];
+		}
+
+		$index = array_flip($ids);
+		$result = [];
+
+		foreach ($this->loadData() as $row)
+		{
+			$id = (string)$row['id'];
+			if (isset($index[$id]))
+			{
+				$result[$id] = $this->hydrate($row);
+			}
+		}
+
+		return $result;
+	}
+
 	/** @return array<Book> */
 	public function getAll(): array
 	{

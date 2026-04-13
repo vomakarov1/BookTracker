@@ -15,6 +15,12 @@ interface BookRepositoryInterface
 	public function getById(string $id): Book;
 
 	/**
+	 * @param array<string> $ids
+	 * @return array<string, Book>
+	 */
+	public function getByIds(array $ids): array;
+
+	/**
 	 * @return array<Book>
 	 */
 	public function getAll(): array;

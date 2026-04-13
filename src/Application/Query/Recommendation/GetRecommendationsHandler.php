@@ -27,12 +27,8 @@ final class GetRecommendationsHandler
 	{
 		$readingHistory = $this->readingEntryRepository->getByUserId($query->userId);
 
-		$readBooks = array_values(
-			array_map(
-				fn($entry) => $this->bookRepository->getById($entry->getBookId()),
-				$readingHistory,
-			)
-		);
+		$bookIds = array_map(static fn($entry) => $entry->getBookId(), $readingHistory);
+		$readBooks = array_values($this->bookRepository->getByIds($bookIds));
 
 		$candidates = $this->bookRepository->getAll();
 

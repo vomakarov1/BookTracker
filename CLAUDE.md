@@ -33,7 +33,9 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - `ReadingEntry`: конструктор **private**, создание только через `ReadingEntry::create(string $id, User $user, Book $book, ReadingStatus $status = ReadingStatus::PLANNED)`
 - Репозитории — только интерфейсы, реализации в Infrastructure
 - `RecommendationService` содержит бизнес-правила фильтрации ("не рекомендовать автора после 3 низких оценок", "рекомендовать следующую в серии"), но НЕ обращается к репозиториям напрямую — получает данные через параметры
-- Value Objects: `ReadingEntryRating` (валидация диапазона), `BookVector` (вектор числовых признаков книги для вычисления сходства; возвращается из `VectorizerInterface::vectorize()`, принимается в `DistanceMetricInterface::distance()`)
+- Value Objects: `ReadingEntryRating` (валидация диапазона), `BookVector` (типизированная обёртка над `array<float>`, представляет вектор признаков книги для вычисления сходства)
+- Доменные сервисы-интерфейсы: `VectorizerInterface` (преобразует `Book` → `BookVector`), `DistanceMetricInterface` (вычисляет расстояние между двумя `BookVector`). Оба живут в `Domain/Service/` — Domain владеет контрактами, Infrastructure предоставляет реализации.
+- `BookVector` живёт в `Domain/ValueObject/` (не в Infrastructure), потому что является типом данных контракта для `VectorizerInterface` и `DistanceMetricInterface`. Перенос в Infrastructure нарушил бы Dependency Rule: Domain-интерфейсы импортировали бы Infrastructure-тип.
 
 #### Глоссарий сущностей
 - **Book** — книга в каталоге: title, author, category, complexity. Агрегат. Инварианты: title и author не пустые.
@@ -53,8 +55,8 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 ### Infrastructure
 - Репозитории: хранение в JSON-файлах (`storage/books.json`, `storage/users.json`, `storage/reading_entries.json`). При каждом вызове загружают файл, при сохранении — записывают обратно. При необходимости заменяются на Doctrine DBAL/ORM с маппингом в Infrastructure, НЕ в Domain-сущностях
 - `UuidV4Generator` implements `IdGeneratorInterface` — генерирует UUID v4 через `random_bytes()`
-- `BookFeatureVectorizer` implements `VectorizerInterface` — возвращает `BookVector`
-- `CosineDistance` implements `DistanceMetricInterface`
+- `BookFeatureVectorizer` implements `Domain/Service/VectorizerInterface` — создаёт и возвращает `BookVector`
+- `CosineDistance` implements `Domain/Service/DistanceMetricInterface`
 - `LocalFileReader` implements `FileReaderInterface`, `LocalFileWriter` implements `FileWriterInterface` — файловый I/O изолирован в Infrastructure
 - Импорт/экспорт: можно использовать `symfony/serializer` в реализациях CsvParser, JsonFormatter и т.д.
 

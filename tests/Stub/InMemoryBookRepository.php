@@ -23,6 +23,22 @@ final class InMemoryBookRepository implements BookRepositoryInterface
 		return $this->books[$id];
 	}
 
+	/** @return array<string, Book> */
+	public function getByIds(array $ids): array
+	{
+		$result = [];
+
+		foreach ($ids as $id)
+		{
+			if (isset($this->books[$id]))
+			{
+				$result[$id] = $this->books[$id];
+			}
+		}
+
+		return $result;
+	}
+
 	/** @return array<Book> */
 	public function getAll(): array
 	{
