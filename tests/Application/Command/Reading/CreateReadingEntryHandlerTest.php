@@ -12,7 +12,6 @@ use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Exception\UserNotFoundException;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
-use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use BookTracker\Tests\Stub\InMemoryReadingEntryRepository;
 use BookTracker\Tests\Stub\InMemoryUserRepository;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +32,6 @@ final class CreateReadingEntryHandlerTest extends TestCase
 			$this->userRepository,
 			$this->bookRepository,
 			$this->entryRepository,
-			new InMemoryIdGenerator(),
 		);
 
 		$this->userRepository->save(new User('u1', 'Alice', 'alice@example.com'));
@@ -42,9 +40,9 @@ final class CreateReadingEntryHandlerTest extends TestCase
 
 	public function testCreatesReadingEntryWithCorrectUserAndBook(): void
 	{
-		$id = $this->handler->handle(new CreateReadingEntryCommand('u1', 'b1'));
+		$this->handler->handle(new CreateReadingEntryCommand('e1', 'u1', 'b1'));
 
-		$entry = $this->entryRepository->getById($id);
+		$entry = $this->entryRepository->getById('e1');
 		self::assertSame('u1', $entry->getUserId());
 		self::assertSame('b1', $entry->getBookId());
 	}
@@ -52,20 +50,20 @@ final class CreateReadingEntryHandlerTest extends TestCase
 	public function testThrowsUserNotFoundExceptionForNonExistentUser(): void
 	{
 		$this->expectException(UserNotFoundException::class);
-		$this->handler->handle(new CreateReadingEntryCommand('non-existent', 'b1'));
+		$this->handler->handle(new CreateReadingEntryCommand('e1', 'non-existent', 'b1'));
 	}
 
 	public function testThrowsBookNotFoundExceptionForNonExistentBook(): void
 	{
 		$this->expectException(BookNotFoundException::class);
-		$this->handler->handle(new CreateReadingEntryCommand('u1', 'non-existent'));
+		$this->handler->handle(new CreateReadingEntryCommand('e1', 'u1', 'non-existent'));
 	}
 
 	public function testThrowsDuplicateReadingEntryExceptionForDuplicateUserAndBook(): void
 	{
-		$this->handler->handle(new CreateReadingEntryCommand('u1', 'b1'));
+		$this->handler->handle(new CreateReadingEntryCommand('e1', 'u1', 'b1'));
 
 		$this->expectException(DuplicateReadingEntryException::class);
-		$this->handler->handle(new CreateReadingEntryCommand('u1', 'b1'));
+		$this->handler->handle(new CreateReadingEntryCommand('e2', 'u1', 'b1'));
 	}
 }

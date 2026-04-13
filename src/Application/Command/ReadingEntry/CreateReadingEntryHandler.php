@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\ReadingEntry;
 
-use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Entity\ReadingEntry;
 use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
@@ -17,12 +16,11 @@ final class CreateReadingEntryHandler
 		private readonly UserRepositoryInterface $userRepository,
 		private readonly BookRepositoryInterface $bookRepository,
 		private readonly ReadingEntryRepositoryInterface $readingEntryRepository,
-		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
 
-	public function handle(CreateReadingEntryCommand $command): string
+	public function handle(CreateReadingEntryCommand $command): void
 	{
 		$user = $this->userRepository->getById($command->userId);
 		$book = $this->bookRepository->getById($command->bookId);
@@ -38,12 +36,8 @@ final class CreateReadingEntryHandler
 			);
 		}
 
-		$id = $this->idGenerator->generate();
-
-		$entry = ReadingEntry::create(id: $id, user: $user, book: $book);
+		$entry = ReadingEntry::create(id: $command->id, user: $user, book: $book);
 
 		$this->readingEntryRepository->save($entry);
-
-		return $id;
 	}
 }

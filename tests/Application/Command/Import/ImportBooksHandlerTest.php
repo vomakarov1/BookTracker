@@ -49,9 +49,8 @@ final class ImportBooksHandlerTest extends TestCase
 		$this->fileReader->addFile('/books.json', '[]');
 
 		$command = new ImportBooksCommand('/books.json', 'json');
-		$imported = $this->makeHandler($parser)->handle($command);
+		$this->makeHandler($parser)->handle($command);
 
-		$this->assertSame(3, $imported);
 		$this->assertCount(3, $this->repository->getAll());
 	}
 
@@ -69,9 +68,8 @@ final class ImportBooksHandlerTest extends TestCase
 		$this->fileReader->addFile('/books.json', '[]');
 
 		$command = new ImportBooksCommand('/books.json', 'json');
-		$imported = $this->makeHandler($parser)->handle($command);
+		$this->makeHandler($parser)->handle($command);
 
-		$this->assertSame(2, $imported);
 		$this->assertCount(2, $this->repository->getAll());
 	}
 

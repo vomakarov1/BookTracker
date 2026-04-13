@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\Book;
 
-use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Entity\Book;
 use BookTracker\Domain\Exception\DuplicateBookException;
 use BookTracker\Domain\Repository\BookRepositoryInterface;
@@ -13,12 +12,11 @@ final class CreateBookHandler
 {
 	public function __construct(
 		private readonly BookRepositoryInterface $bookRepository,
-		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
 
-	public function handle(CreateBookCommand $command): string
+	public function handle(CreateBookCommand $command): void
 	{
 		if ($this->bookRepository->existsByTitle($command->title))
 		{
@@ -27,10 +25,8 @@ final class CreateBookHandler
 			);
 		}
 
-		$id = $this->idGenerator->generate();
-
 		$book = new Book(
-			id: $id,
+			id: $command->id,
 			title: $command->title,
 			author: $command->author,
 			category: $command->category,
@@ -38,7 +34,5 @@ final class CreateBookHandler
 		);
 
 		$this->bookRepository->save($book);
-
-		return $id;
 	}
 }

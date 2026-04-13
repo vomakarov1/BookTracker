@@ -8,7 +8,6 @@ use BookTracker\Application\Command\Book\CreateBookCommand;
 use BookTracker\Application\Command\Book\CreateBookHandler;
 use BookTracker\Domain\Exception\DuplicateBookException;
 use BookTracker\Tests\Stub\InMemoryBookRepository;
-use BookTracker\Tests\Stub\InMemoryIdGenerator;
 use PHPUnit\Framework\TestCase;
 
 final class CreateBookHandlerTest extends TestCase
@@ -19,16 +18,16 @@ final class CreateBookHandlerTest extends TestCase
 	protected function setUp(): void
 	{
 		$this->repository = new InMemoryBookRepository();
-		$this->handler = new CreateBookHandler($this->repository, new InMemoryIdGenerator());
+		$this->handler = new CreateBookHandler($this->repository);
 	}
 
 	public function testCreatesBookWithCorrectFields(): void
 	{
-		$command = new CreateBookCommand('Clean Code', 'Robert Martin', 'Tech', 7);
+		$command = new CreateBookCommand('1', 'Clean Code', 'Robert Martin', 'Tech', 7);
 
-		$id = $this->handler->handle($command);
+		$this->handler->handle($command);
 
-		$book = $this->repository->getById($id);
+		$book = $this->repository->getById('1');
 		self::assertSame('Clean Code', $book->getTitle());
 		self::assertSame('Robert Martin', $book->getAuthor());
 		self::assertSame('Tech', $book->getCategory());
@@ -37,9 +36,9 @@ final class CreateBookHandlerTest extends TestCase
 
 	public function testThrowsDuplicateBookExceptionOnDuplicateTitle(): void
 	{
-		$this->handler->handle(new CreateBookCommand('Clean Code', 'Robert Martin', 'Tech', 7));
+		$this->handler->handle(new CreateBookCommand('1', 'Clean Code', 'Robert Martin', 'Tech', 7));
 
 		$this->expectException(DuplicateBookException::class);
-		$this->handler->handle(new CreateBookCommand('Clean Code', 'Another Author', 'Fiction', 3));
+		$this->handler->handle(new CreateBookCommand('2', 'Clean Code', 'Another Author', 'Fiction', 3));
 	}
 }

@@ -7,6 +7,7 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Command\Book\CreateBookCommand;
 use BookTracker\Application\Command\Book\CreateBookHandler;
 use BookTracker\Application\Exception\ValidationException;
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Exception\DuplicateBookException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,6 +18,7 @@ final class CreateBookCliCommand extends Command
 {
 	public function __construct(
 		private readonly CreateBookHandler $handler,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 		parent::__construct();
@@ -50,14 +52,17 @@ final class CreateBookCliCommand extends Command
 
 		try
 		{
+			$id = $this->idGenerator->generate();
+
 			$command = new CreateBookCommand(
+				id: $id,
 				title: $title,
 				author: $author,
 				category: $category,
 				complexity: (int)$complexity,
 			);
 
-			$id = $this->handler->handle($command);
+			$this->handler->handle($command);
 
 			$output->writeln(sprintf('Book created with ID: %s', $id));
 

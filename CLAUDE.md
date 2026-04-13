@@ -41,11 +41,13 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - **ReadingEntry** — факт чтения книги пользователем: связь User↔Book, status, rating, даты. Отдельный агрегат. Инварианты: создаётся только для существующих User и Book (фабричный метод), рейтинг выставляется только для FINISHED, переходы статусов ограничены (PLANNED→READING, PLANNED→DROPPED, READING→FINISHED, READING→DROPPED, DROPPED→PLANNED; из FINISHED переходов нет).
 
 ### Application
-- CQRS: Command мутирует состояние, Query читает. Не смешивать.
+- CQRS: Command мутирует состояние (возвращает `void`), Query читает. Не смешивать.
 - Валидация формата — в Command (self-validating), валидация с обращением к репозиторию — в Handler
 - `GetRecommendationsHandler` — оркестратор: достаёт данные из репозиториев, передаёт в `RecommendationService`
 - `RecommendationDTO` содержит: книгу, score (числовая близость), reason (почему рекомендована)
 - **Генерация ID** — через `Application\Port\IdGeneratorInterface::generate()`. Репозитории НЕ порождают ID. Реализация (`UuidV4Generator`) живёт в Infrastructure и связывается через DI.
+  - **Для Create-команд**: ID генерируется в CLI-адаптере (`$id = $this->idGenerator->generate()`), передаётся первым аргументом в Command. Handler принимает ID из Command — он не обращается к `IdGeneratorInterface` напрямую.
+  - **Для Import-команд**: ID генерируется внутри Handler — количество сущностей неизвестно до парсинга файла.
 - **Файловый I/O** — через `Application\Port\FileReaderInterface::read()` и `Application\Port\FileWriterInterface::write()`. Хендлеры (`ImportBooksHandler`, `ExportBooksHandler`) не вызывают `file_get_contents`/`file_put_contents` напрямую. Реализации (`LocalFileReader`, `LocalFileWriter`) живут в Infrastructure.
 
 ### Infrastructure
@@ -70,14 +72,14 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - Не добавлять Event/Listener/Subscriber — не нужны (YAGNI)
 - Не использовать Symfony Messenger для Command/Query Bus
 - Не использовать сервис-локатор / `ContainerAware` — зависимости через конструктор
-- Не добавлять `nextId()` или любые методы генерации ID в интерфейсы репозиториев — ID генерируется через `IdGeneratorInterface` в Application слое
+- Не добавлять `nextId()` или любые методы генерации ID в интерфейсы репозиториев — ID генерируется через `IdGeneratorInterface` в Adapters (для Create-команд) или Application (для Import-команд)
 
 ## Тесты
 - PHPUnit, тесты пишутся для Domain и Application и Infrastructure слоёв
 - Тесты для Adapters пока не пишутся
 - Структура: `tests/` повторяет `src/` (например `tests/Domain/Enum/ReadingStatusTest.php`)
 - In-memory реализации репозиториев для тестов: `tests/Stub/` (InMemoryBookRepository и т.д.)
-- `tests/Stub/InMemoryIdGenerator` — стаб `IdGeneratorInterface`, возвращает последовательные строковые числа ("1", "2", …)
+- `tests/Stub/InMemoryIdGenerator` — стаб `IdGeneratorInterface`, возвращает последовательные строковые числа ("1", "2", …). Используется в тестах ImportBooksHandler (где handler генерирует ID сам). Create-хендлеры ID не генерируют — тесты передают явный ID в Command.
 - `tests/Stub/InMemoryFileReader` — стаб `FileReaderInterface`, хранит файлы в памяти; `addFile(path, content)` регистрирует содержимое, бросает `\RuntimeException` для незарегистрированных путей
 - `tests/Stub/InMemoryFileWriter` — стаб `FileWriterInterface`, хранит записанное содержимое в памяти; `getContent(path)` / `hasFile(path)` для проверки в тестах
 - После каждого изменения: `./vendor/bin/phpunit` + `./vendor/bin/phpstan analyse`

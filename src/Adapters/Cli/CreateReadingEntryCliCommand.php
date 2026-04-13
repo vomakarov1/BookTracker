@@ -6,6 +6,7 @@ namespace BookTracker\Adapters\Cli;
 
 use BookTracker\Application\Command\ReadingEntry\CreateReadingEntryCommand;
 use BookTracker\Application\Command\ReadingEntry\CreateReadingEntryHandler;
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Exception\BookNotFoundException;
 use BookTracker\Domain\Exception\DuplicateReadingEntryException;
 use BookTracker\Domain\Exception\UserNotFoundException;
@@ -18,6 +19,7 @@ final class CreateReadingEntryCliCommand extends Command
 {
 	public function __construct(
 		private readonly CreateReadingEntryHandler $handler,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 		parent::__construct();
@@ -47,8 +49,10 @@ final class CreateReadingEntryCliCommand extends Command
 
 		try
 		{
-			$command = new CreateReadingEntryCommand(userId: $userId, bookId: $bookId);
-			$id = $this->handler->handle($command);
+			$id = $this->idGenerator->generate();
+
+			$command = new CreateReadingEntryCommand(id: $id, userId: $userId, bookId: $bookId);
+			$this->handler->handle($command);
 
 			$output->writeln(sprintf('Reading entry created with ID: %s', $id));
 

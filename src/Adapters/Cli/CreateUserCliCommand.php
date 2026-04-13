@@ -7,6 +7,7 @@ namespace BookTracker\Adapters\Cli;
 use BookTracker\Application\Command\User\CreateUserCommand;
 use BookTracker\Application\Command\User\CreateUserHandler;
 use BookTracker\Application\Exception\ValidationException;
+use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Exception\DuplicateUserException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,6 +18,7 @@ final class CreateUserCliCommand extends Command
 {
 	public function __construct(
 		private readonly CreateUserHandler $handler,
+		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 		parent::__construct();
@@ -46,8 +48,10 @@ final class CreateUserCliCommand extends Command
 
 		try
 		{
-			$command = new CreateUserCommand(name: $name, email: $email);
-			$id = $this->handler->handle($command);
+			$id = $this->idGenerator->generate();
+
+			$command = new CreateUserCommand(id: $id, name: $name, email: $email);
+			$this->handler->handle($command);
 
 			$output->writeln(sprintf('User created with ID: %s', $id));
 

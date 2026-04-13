@@ -8,18 +8,25 @@ use BookTracker\Application\Exception\ValidationException;
 
 final readonly class CreateBookCommand
 {
+	public string $id;
 	public string $title;
 	public string $author;
 	public string $category;
 	public int $complexity;
 
 	public function __construct(
+		string $id,
 		string $title,
 		string $author,
 		string $category,
 		int $complexity,
 	)
 	{
+		if (trim($id) === '')
+		{
+			throw new ValidationException('Book id must not be empty.');
+		}
+
 		if (trim($title) === '')
 		{
 			throw new ValidationException('Book title must not be empty.');
@@ -38,10 +45,11 @@ final readonly class CreateBookCommand
 		if ($complexity < 1 || $complexity > 10)
 		{
 			throw new ValidationException(
-				sprintf('Book complexity must be between 1 and 10, %d given.', $complexity)
+				sprintf('Book complexity must be between 1 and 10, %d given.', $complexity),
 			);
 		}
 
+		$this->id = $id;
 		$this->title = $title;
 		$this->author = $author;
 		$this->category = $category;

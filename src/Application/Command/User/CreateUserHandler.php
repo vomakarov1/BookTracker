@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace BookTracker\Application\Command\User;
 
-use BookTracker\Application\Port\IdGeneratorInterface;
 use BookTracker\Domain\Entity\User;
 use BookTracker\Domain\Exception\DuplicateUserException;
 use BookTracker\Domain\Repository\UserRepositoryInterface;
@@ -13,12 +12,11 @@ final class CreateUserHandler
 {
 	public function __construct(
 		private readonly UserRepositoryInterface $userRepository,
-		private readonly IdGeneratorInterface $idGenerator,
 	)
 	{
 	}
 
-	public function handle(CreateUserCommand $command): string
+	public function handle(CreateUserCommand $command): void
 	{
 		if ($this->userRepository->existsByEmail($command->email))
 		{
@@ -27,16 +25,12 @@ final class CreateUserHandler
 			);
 		}
 
-		$id = $this->idGenerator->generate();
-
 		$user = new User(
-			id: $id,
+			id: $command->id,
 			name: $command->name,
 			email: $command->email,
 		);
 
 		$this->userRepository->save($user);
-
-		return $id;
 	}
 }
