@@ -42,7 +42,7 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 
 ### Application
 - CQRS: Command мутирует состояние (возвращает `void`), Query читает. Не смешивать.
-- Валидация формата — в Command (self-validating), валидация с обращением к репозиторию — в Handler
+- Валидация формата — в Command (self-validating): обязательные поля, непустые строки. Бизнес-инварианты (диапазоны, правила) — в Domain (Entity / Value Object). Дублировать бизнес-инварианты в Command нельзя — при изменении диапазона достаточно поменять только VO.
 - `GetRecommendationsHandler` — оркестратор: достаёт данные из репозиториев, передаёт в `RecommendationService`
 - `RecommendationDTO` содержит: книгу, score (числовая близость), reason (почему рекомендована)
 - **Генерация ID** — через `Application\Port\IdGeneratorInterface::generate()`. Репозитории НЕ порождают ID. Реализация (`UuidV4Generator`) живёт в Infrastructure и связывается через DI.

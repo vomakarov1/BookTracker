@@ -18,13 +18,6 @@ final readonly class RateReadingEntryCommand
 			throw new ValidationException('Reading entry id must not be empty.');
 		}
 
-		if ($rating < 1)
-		{
-			throw new ValidationException(
-				sprintf('Rating must be a positive number, %d given.', $rating)
-			);
-		}
-
 		$this->readingEntryId = $readingEntryId;
 		$this->rating = $rating;
 	}
