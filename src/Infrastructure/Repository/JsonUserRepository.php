@@ -39,14 +39,14 @@ final class JsonUserRepository implements UserRepositoryInterface
 
 		if ($content === false)
 		{
-			return [];
+			throw new RuntimeException(sprintf('Failed to read storage file: %s', $this->filePath));
 		}
 
 		$decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
 		if (!is_array($decoded))
 		{
-			return [];
+			throw new RuntimeException(sprintf('Storage file contains invalid data: %s', $this->filePath));
 		}
 
 		/** @var array<int, array<string, mixed>> $decoded */

@@ -32,6 +32,7 @@ final class JsonBookRepository implements BookRepositoryInterface
 
 	/**
 	 * @return array<int, array<string, mixed>>
+	 * @throws JsonException
 	 */
 	private function loadData(): array
 	{
@@ -39,14 +40,14 @@ final class JsonBookRepository implements BookRepositoryInterface
 
 		if ($content === false)
 		{
-			return [];
+			throw new RuntimeException(sprintf('Failed to read storage file: %s', $this->filePath));
 		}
 
-		$decoded = json_decode($content, true);
+		$decoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
 		if (!is_array($decoded))
 		{
-			return [];
+			throw new RuntimeException(sprintf('Storage file contains invalid data: %s', $this->filePath));
 		}
 
 		/** @var array<int, array<string, mixed>> $decoded */
@@ -93,6 +94,9 @@ final class JsonBookRepository implements BookRepositoryInterface
 		];
 	}
 
+	/**
+	 * @throws JsonException
+	 */
 	public function getById(string $id): Book
 	{
 		foreach ($this->loadData() as $row)
@@ -106,7 +110,10 @@ final class JsonBookRepository implements BookRepositoryInterface
 		throw new BookNotFoundException(sprintf('Book "%s" not found.', $id));
 	}
 
-	/** @return array<string, Book> */
+	/**
+	 * @return array<string, Book>
+	 * @throws JsonException
+	 */
 	public function getByIds(array $ids): array
 	{
 		if ($ids === [])
@@ -129,7 +136,10 @@ final class JsonBookRepository implements BookRepositoryInterface
 		return $result;
 	}
 
-	/** @return array<Book> */
+	/**
+	 * @return array<Book>
+	 * @throws JsonException
+	 */
 	public function getAll(): array
 	{
 		$result = [];
@@ -185,6 +195,9 @@ final class JsonBookRepository implements BookRepositoryInterface
 		throw new BookNotFoundException(sprintf('Book "%s" not found.', $id));
 	}
 
+	/**
+	 * @throws JsonException
+	 */
 	public function existsByTitle(string $title): bool
 	{
 		foreach ($this->loadData() as $row)
