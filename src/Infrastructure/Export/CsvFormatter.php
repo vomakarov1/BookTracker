@@ -14,22 +14,34 @@ final class CsvFormatter implements ExportFormatterInterface
 	 */
 	public function formatBooks(array $books): string
 	{
-		$lines = ['id,title,author,category,complexity'];
+		$lines = [$this->encodeRow(['id', 'title', 'author', 'category', 'complexity'])];
 
 		foreach ($books as $book)
 		{
-			$lines[] = implode(
-				',',
-				[
-					$book->id,
-					$book->title,
-					$book->author,
-					$book->category,
-					(string)$book->complexity,
-				],
-			);
+			$lines[] = $this->encodeRow([
+				$book->id,
+				$book->title,
+				$book->author,
+				$book->category,
+				(string)$book->complexity,
+			]);
 		}
 
 		return implode("\n", $lines);
+	}
+
+	/** @param array<string> $fields */
+	private function encodeRow(array $fields): string
+	{
+		$handle = fopen('php://memory', 'wb');
+
+		assert($handle !== false);
+		fputcsv($handle, $fields, escape: '');
+		rewind($handle);
+
+		$row = stream_get_contents($handle);
+		fclose($handle);
+
+		return rtrim((string)$row, "\r\n");
 	}
 }

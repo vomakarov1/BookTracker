@@ -10,6 +10,22 @@ use PHPUnit\Framework\TestCase;
 
 final class CsvFormatterTest extends TestCase
 {
+	public function testFormatBooksQuotesFieldsContainingCommas(): void
+	{
+		$formatter = new CsvFormatter();
+
+		$books = [
+			new BookDTO('1', 'War, and Peace', 'Tolstoy', 'Fiction', 6),
+			new BookDTO('2', 'He said "Hello"', 'Author', 'Fiction', 3),
+		];
+
+		$result = $formatter->formatBooks($books);
+		$lines = explode("\n", $result);
+
+		$this->assertStringContainsString('"War, and Peace"', $lines[1]);
+		$this->assertStringContainsString('"He said ""Hello"""', $lines[2]);
+	}
+
 	public function testFormatBooksReturnsHeaderAndDataRows(): void
 	{
 		$formatter = new CsvFormatter();
