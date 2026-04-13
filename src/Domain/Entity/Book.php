@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BookTracker\Domain\Entity;
 
-use InvalidArgumentException;
+use BookTracker\Domain\Exception\InvalidBookException;
 
 final class Book
 {
@@ -18,18 +18,18 @@ final class Book
 	{
 		if (trim($title) === '')
 		{
-			throw new InvalidArgumentException('Book title must not be empty.');
+			throw new InvalidBookException('Book title must not be empty.');
 		}
 
 		if (trim($author) === '')
 		{
-			throw new InvalidArgumentException('Book author must not be empty.');
+			throw new InvalidBookException('Book author must not be empty.');
 		}
 
 		if ($complexity < 1 || $complexity > 10)
 		{
-			throw new InvalidArgumentException(
-				sprintf('Book complexity must be between 1 and 10, %d given.', $complexity)
+			throw new InvalidBookException(
+				sprintf('Book complexity must be between 1 and 10, %d given.', $complexity),
 			);
 		}
 	}

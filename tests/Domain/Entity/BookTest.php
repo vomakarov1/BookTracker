@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Tests\Domain\Entity;
 
 use BookTracker\Domain\Entity\Book;
-use InvalidArgumentException;
+use BookTracker\Domain\Exception\InvalidBookException;
 use PHPUnit\Framework\TestCase;
 
 final class BookTest extends TestCase
@@ -23,25 +23,25 @@ final class BookTest extends TestCase
 
 	public function testCreateWithEmptyTitleThrows(): void
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(InvalidBookException::class);
 		new Book('1', '', 'Robert C. Martin', 'Programming', 7);
 	}
 
 	public function testCreateWithEmptyAuthorThrows(): void
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(InvalidBookException::class);
 		new Book('1', 'Clean Code', '', 'Programming', 7);
 	}
 
 	public function testCreateWithComplexityZeroThrows(): void
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(InvalidBookException::class);
 		new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', 0);
 	}
 
 	public function testCreateWithComplexityElevenThrows(): void
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(InvalidBookException::class);
 		new Book('1', 'Clean Code', 'Robert C. Martin', 'Programming', 11);
 	}
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BookTracker\Tests\Domain\Entity;
 
 use BookTracker\Domain\Entity\User;
-use InvalidArgumentException;
+use BookTracker\Domain\Exception\InvalidUserException;
 use PHPUnit\Framework\TestCase;
 
 final class UserTest extends TestCase
@@ -21,13 +21,13 @@ final class UserTest extends TestCase
 
 	public function testCreateWithEmptyNameThrows(): void
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(InvalidUserException::class);
 		new User('1', '', 'john@example.com');
 	}
 
 	public function testCreateWithEmptyEmailThrows(): void
 	{
-		$this->expectException(InvalidArgumentException::class);
+		$this->expectException(InvalidUserException::class);
 		new User('1', 'John Doe', '');
 	}
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BookTracker\Domain\Entity;
 
-use InvalidArgumentException;
+use BookTracker\Domain\Exception\InvalidUserException;
 
 final class User
 {
@@ -16,12 +16,12 @@ final class User
 	{
 		if (trim($name) === '')
 		{
-			throw new InvalidArgumentException('User name must not be empty.');
+			throw new InvalidUserException('User name must not be empty.');
 		}
 
 		if (trim($email) === '')
 		{
-			throw new InvalidArgumentException('User email must not be empty.');
+			throw new InvalidUserException('User email must not be empty.');
 		}
 	}
 
