@@ -28,7 +28,7 @@ final class ImportBooksHandler
 	{
 	}
 
-	public function handle(ImportBooksCommand $command): void
+	public function handle(ImportBooksCommand $command): int
 	{
 		try
 		{
@@ -49,6 +49,8 @@ final class ImportBooksHandler
 
 		$bookDTOs = $parser->parseBooks($content);
 
+		$imported = 0;
+
 		foreach ($bookDTOs as $dto)
 		{
 			if ($this->bookRepository->existsByTitle($dto->title))
@@ -66,6 +68,9 @@ final class ImportBooksHandler
 			);
 
 			$this->bookRepository->save($book);
+			$imported++;
 		}
+
+		return $imported;
 	}
 }

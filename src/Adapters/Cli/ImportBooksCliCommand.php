@@ -45,9 +45,9 @@ final class ImportBooksCliCommand extends Command
 		try
 		{
 			$command = new ImportBooksCommand(filePath: $file, format: $format);
-			$this->handler->handle($command);
+			$imported = $this->handler->handle($command);
 
-			$io->success('Books imported.');
+			$io->success(sprintf('Imported %d book(s).', $imported));
 
 			return Command::SUCCESS;
 		}
