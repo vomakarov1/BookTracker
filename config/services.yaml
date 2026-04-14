@@ -55,17 +55,25 @@ services:
 
   book.json_storage:
     class: BookTracker\Infrastructure\Storage\JsonFileStorage
-    arguments: [ '%storage_path%/books.json', '@Symfony\Component\Filesystem\Filesystem' ]
+    arguments: [ '%storage_path%/books.json', '@Symfony\Component\Filesystem\Filesystem', '@Symfony\Component\Lock\LockFactory' ]
 
   user.json_storage:
     class: BookTracker\Infrastructure\Storage\JsonFileStorage
-    arguments: [ '%storage_path%/users.json', '@Symfony\Component\Filesystem\Filesystem' ]
+    arguments: [ '%storage_path%/users.json', '@Symfony\Component\Filesystem\Filesystem', '@Symfony\Component\Lock\LockFactory' ]
 
   reading_entry.json_storage:
     class: BookTracker\Infrastructure\Storage\JsonFileStorage
-    arguments: [ '%storage_path%/reading_entries.json', '@Symfony\Component\Filesystem\Filesystem' ]
+    arguments: [ '%storage_path%/reading_entries.json', '@Symfony\Component\Filesystem\Filesystem', '@Symfony\Component\Lock\LockFactory' ]
 
   Symfony\Component\Filesystem\Filesystem: ~
+
+  Symfony\Component\Lock\Store\FlockStore:
+    arguments:
+      $lockPath: '%project_dir%/storage'
+
+  Symfony\Component\Lock\LockFactory:
+    arguments:
+      $store: '@Symfony\Component\Lock\Store\FlockStore'
 
   Symfony\Component\Serializer\SerializerInterface:
     factory: [ 'BookTracker\Infrastructure\Serializer\AppSerializerFactory', 'create' ]
