@@ -30,10 +30,10 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 
 ### Domain
 - Entity поля — private, изменение только через методы с бизнес-логикой
-- `ReadingEntry`: конструктор **private**, создание только через `ReadingEntry::create(string $id, User $user, Book $book, ReadingStatus $status = ReadingStatus::PLANNED)`
-- Репозитории — только интерфейсы, реализации в Infrastructure
-- `RecommendationService` содержит бизнес-правила фильтрации ("не рекомендовать автора после 3 низких оценок", "рекомендовать следующую в серии"), но НЕ обращается к репозиториям напрямую — получает данные через параметры
-- Value Objects: `ReadingEntryRating` (валидация диапазона), `BookVector` (типизированная обёртка над `array<float>`, представляет вектор признаков книги для вычисления сходства)
+- `ReadingEntry`: конструктор **private**, создание только через `ReadingEntry::create(string $id, User $user, Book $book, ReadingStatus $status = ReadingStatus::PLANNED)`. Восстановление из хранилища — через `ReadingEntry::reconstruct(string $id, string $userId, string $bookId, ReadingStatus $status, DateTimeImmutable $startedAt, ?ReadingEntryRating $rating = null, ?DateTimeImmutable $finishedAt = null)` — принимает скалярные userId/bookId, не требует объектов User/Book
+- Репозитории — только интерфейсы, реализации в Infrastructure. `BookRepositoryInterface` дополнительно имеет `getByIds(array<string> $ids): array<string, Book>` — используется в `GetRecommendationsHandler` для батчевой загрузки книг по ID
+- `RecommendationService` содержит бизнес-правила фильтрации ("не рекомендовать автора после 3 низких оценок", "рекомендовать следующую в серии"), но НЕ обращается к репозиториям напрямую — получает данные через параметры. Возвращает `array<RecommendationResult>` (Domain-объект: book, score, reason), который `GetRecommendationsHandler` конвертирует в `RecommendationDTO`
+- Value Objects: `ReadingEntryRating` (валидация диапазона 1–10), `BookComplexity` (валидация диапазона 1–10, бросает `InvalidBookException`), `BookVector` (типизированная обёртка над `array<float>`, представляет вектор признаков книги для вычисления сходства)
 - Доменные сервисы-интерфейсы: `VectorizerInterface` (преобразует `Book` → `BookVector`), `DistanceMetricInterface` (вычисляет расстояние между двумя `BookVector`). Оба живут в `Domain/Service/` — Domain владеет контрактами, Infrastructure предоставляет реализации.
 - `BookVector` живёт в `Domain/ValueObject/` (не в Infrastructure), потому что является типом данных контракта для `VectorizerInterface` и `DistanceMetricInterface`. Перенос в Infrastructure нарушил бы Dependency Rule: Domain-интерфейсы импортировали бы Infrastructure-тип.
 
@@ -51,14 +51,26 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
   - **Для Create-команд**: ID генерируется в CLI-адаптере (`$id = $this->idGenerator->generate()`), передаётся первым аргументом в Command. Handler принимает ID из Command — он не обращается к `IdGeneratorInterface` напрямую.
   - **Для Import-команд**: ID генерируется внутри Handler — количество сущностей неизвестно до парсинга файла.
 - **Файловый I/O** — через `Application\Port\FileReaderInterface::read()` и `Application\Port\FileWriterInterface::write()`. Хендлеры (`ImportBooksHandler`, `ExportBooksHandler`) не вызывают `file_get_contents`/`file_put_contents` напрямую. Реализации (`LocalFileReader`, `LocalFileWriter`) живут в Infrastructure.
+- **Импорт/экспорт форматы** — через `Application\Port\ImportParserInterface::parseBooks(string $content): array<BookDTO>` и `Application\Port\ExportFormatterInterface::formatBooks(array<BookDTO> $books): string`. Реализации (`CsvParser`, `JsonParser`, `CsvFormatter`, `JsonFormatter`) живут в Infrastructure. Формат задаётся через `Application\Enum\BookFileFormat` (json, csv).
+- **DTO и сборщики** — `BookDTO`, `UserDTO`, `ReadingEntryDTO` используются для передачи данных между слоями. `BookDTOAssembler::fromEntity(Book $book): BookDTO` — статический сборщик в Application.
 
 ### Infrastructure
 - Репозитории: хранение в JSON-файлах (`storage/books.json`, `storage/users.json`, `storage/reading_entries.json`). При каждом вызове загружают файл, при сохранении — записывают обратно. При необходимости заменяются на Doctrine DBAL/ORM с маппингом в Infrastructure, НЕ в Domain-сущностях
-- `UuidV4Generator` implements `IdGeneratorInterface` — генерирует UUID v4 через `random_bytes()`
+- `UuidV4Generator` implements `IdGeneratorInterface` — генерирует UUID v4 через `Symfony\Component\Uid\Uuid::v4()->toRfc4122()`
 - `BookFeatureVectorizer` implements `Domain/Service/VectorizerInterface` — создаёт и возвращает `BookVector`
 - `CosineDistance` implements `Domain/Service/DistanceMetricInterface`
 - `LocalFileReader` implements `FileReaderInterface`, `LocalFileWriter` implements `FileWriterInterface` — файловый I/O изолирован в Infrastructure
+- `CsvParser`, `JsonParser` implements `ImportParserInterface`; `CsvFormatter`, `JsonFormatter` implements `ExportFormatterInterface` — живут в Infrastructure
 - Импорт/экспорт: можно использовать `symfony/serializer` в реализациях CsvParser, JsonFormatter и т.д.
+- `JsonFileStorage` — вспомогательный класс в `Infrastructure/Storage/`, инкапсулирует чтение/запись JSON-файлов (используется репозиториями). Использует `Symfony\Component\Filesystem\Filesystem` и инициализирует пустой файл `[]` если не существует.
+
+## Исключения
+
+### Domain/Exception/
+`BookNotFoundException`, `UserNotFoundException`, `ReadingEntryNotFoundException`, `DuplicateBookException`, `DuplicateUserException`, `DuplicateReadingEntryException`, `InvalidBookException`, `InvalidUserException`, `InvalidRatingException`, `InvalidStatusTransitionException`
+
+### Application/Exception/
+`ValidationException` — нарушение формата/обязательных полей (бросается из Command-конструкторов), `ImportFailedException`, `ExportFailedException`
 
 ## Конвенции
 - Интерфейсы: суффикс `Interface`
@@ -84,4 +96,6 @@ Symfony живёт ТОЛЬКО в Infrastructure и Adapters:
 - `tests/Stub/InMemoryIdGenerator` — стаб `IdGeneratorInterface`, возвращает последовательные строковые числа ("1", "2", …). Используется в тестах ImportBooksHandler (где handler генерирует ID сам). Create-хендлеры ID не генерируют — тесты передают явный ID в Command.
 - `tests/Stub/InMemoryFileReader` — стаб `FileReaderInterface`, хранит файлы в памяти; `addFile(path, content)` регистрирует содержимое, бросает `\RuntimeException` для незарегистрированных путей
 - `tests/Stub/InMemoryFileWriter` — стаб `FileWriterInterface`, хранит записанное содержимое в памяти; `getContent(path)` / `hasFile(path)` для проверки в тестах
+- `tests/Stub/InMemoryUserRepository` — стаб `UserRepositoryInterface`
+- `tests/Stub/InMemoryReadingEntryRepository` — стаб `ReadingEntryRepositoryInterface`
 - После каждого изменения: `./vendor/bin/phpunit` + `./vendor/bin/phpstan analyse`
