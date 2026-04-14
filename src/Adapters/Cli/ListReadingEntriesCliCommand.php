@@ -45,7 +45,7 @@ final class ListReadingEntriesCliCommand extends Command
 			$rows[] = [
 				$entry->id,
 				$entry->bookId,
-				$entry->status,
+				$entry->status->value,
 				$entry->rating !== null ? (string)$entry->rating : '-',
 				$entry->startedAt,
 				$entry->finishedAt ?? '-',

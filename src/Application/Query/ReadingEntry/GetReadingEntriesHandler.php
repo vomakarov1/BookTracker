@@ -26,7 +26,7 @@ final class GetReadingEntriesHandler
 				id: $e->getId(),
 				userId: $e->getUserId(),
 				bookId: $e->getBookId(),
-				status: $e->getStatus()->value,
+				status: $e->getStatus(),
 				rating: $e->getRating()?->getValue(),
 				startedAt: $e->getStartedAt()->format('Y-m-d H:i:s'),
 				finishedAt: $e->getFinishedAt()?->format('Y-m-d H:i:s'),
