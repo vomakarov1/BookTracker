@@ -42,12 +42,8 @@ final class CreateUserCliCommand extends Command
 		$name = $input->getOption('name');
 		$email = $input->getOption('email');
 
-		if (!is_string($name) || !is_string($email))
-		{
-			$io->error('Options --name and --email are required.');
-
-			return Command::FAILURE;
-		}
+		$name = is_string($name) ? $name : (string)$io->ask('User name');
+		$email = is_string($email) ? $email : (string)$io->ask('Email');
 
 		try
 		{

@@ -46,12 +46,10 @@ final class CreateBookCliCommand extends Command
 		$category = $input->getOption('category');
 		$complexity = $input->getOption('complexity');
 
-		if (!is_string($title) || !is_string($author) || !is_string($category) || $complexity === null)
-		{
-			$io->error('Options --title, --author, --category, --complexity are required.');
-
-			return Command::FAILURE;
-		}
+		$title = is_string($title) ? $title : (string)$io->ask('Book title');
+		$author = is_string($author) ? $author : (string)$io->ask('Author');
+		$category = is_string($category) ? $category : (string)$io->ask('Category');
+		$complexity = $complexity ?? $io->ask('Complexity (1-10)');
 
 		try
 		{
