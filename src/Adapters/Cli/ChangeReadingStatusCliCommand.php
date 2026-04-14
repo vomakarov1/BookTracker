@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(name: 'reading:status', description: 'Change the status of a reading entry')]
@@ -30,8 +31,24 @@ final class ChangeReadingStatusCliCommand extends Command
 	{
 		$this
 			->addArgument('id', InputArgument::REQUIRED, 'Reading entry ID')
-			->addArgument('status', InputArgument::REQUIRED, 'New status (planned|reading|finished|dropped)')
+			->addArgument('status', InputArgument::OPTIONAL, 'New status (planned|reading|finished|dropped)')
 		;
+	}
+
+	protected function interact(InputInterface $input, OutputInterface $output): void
+	{
+		if ($input->getArgument('status') !== null)
+		{
+			return;
+		}
+
+		$io = new SymfonyStyle($input, $output);
+
+		$status = $io->askQuestion(
+			new ChoiceQuestion('Select new status', ['planned', 'reading', 'finished', 'dropped']),
+		);
+
+		$input->setArgument('status', $status);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
