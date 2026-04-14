@@ -26,6 +26,7 @@ services:
   BookTracker\Application\Query\User\GetUsersListHandler: ~
   BookTracker\Application\Query\ReadingEntry\GetReadingEntriesHandler: ~
   BookTracker\Application\Query\Recommendation\GetRecommendationsHandler: ~
+  BookTracker\Application\Query\Statistics\GetReadingStatsHandler: ~
 
   BookTracker\Application\Command\Import\ImportBooksHandler:
     arguments:
@@ -129,3 +130,4 @@ services:
   BookTracker\Adapters\Cli\GetRecommendationsCliCommand: ~
   BookTracker\Adapters\Cli\ImportBooksCliCommand: ~
   BookTracker\Adapters\Cli\ExportBooksCliCommand: ~
+  BookTracker\Adapters\Cli\GetReadingStatsCliCommand: ~
